@@ -1,4 +1,4 @@
-# ICO(Initial Coin Offering)
+# ICO (Initial Coin Offering)
 
 Now its time for you to launch a token for `Crypto Devs`. Lets call the token CD.
 
@@ -803,7 +803,3 @@ We will now deploy your dApp, so that everyone can see your website and you can 
 - Now you can see your deployed website by going to your dashboard, selecting your project, and copying the URL from there!
 
 Share your website in Discord :D
-
-## View your Collection on Opensea
-
-Now lets make your collection available on Opensea

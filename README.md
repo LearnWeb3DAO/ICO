@@ -1,6 +1,6 @@
 # ICO (Initial Coin Offering)
 
-Now its time for you to launch a token for `Crypto Devs`. Lets call the token CD.
+Now its time for you to launch a token for `Crypto Devs`. Lets call the token Crypto Dev Token.
 
 ## Requirements
 
@@ -20,8 +20,7 @@ Lets start building 🚀
 ### Smart Contract
 
 First before we start building you would need to understand what an ERC20 is and why is it used for creating tokens. You can find the entire explanation for ERC20 [here](hhttps://eips.ethereum.org/EIPS/eip-20). Make sure you read the provided link before you proceed to next steps.
-To build the smart contract we would be using [Hardhat](https://hardhat.org/).
-Hardhat is an Ethereum development environment and framework designed for full stack development in Solidity. In simple words you can write your smart contract, deploy them, run tests, and debug your code.
+To build the smart contract we would be using [Hardhat](https://hardhat.org/).Hardhat is an Ethereum development environment and framework designed for full stack development in Solidity. In simple words you can write your smart contract, deploy them, run tests, and debug your code.
 
 - To setup a Hardhat project, Open up a terminal and execute these commands
 
@@ -40,154 +39,132 @@ Hardhat is an Ethereum development environment and framework designed for full s
 
   and press `enter` for all the questions.
 
-- In the same terminal now install `@openzeppelin/contracts` as we would be importing [Openzeppelin's ERC20 Contract](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol) in our `CD` contract.
+- In the same terminal now install `@openzeppelin/contracts` as we would be importing [Openzeppelin's ERC20 Contract](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol) and [Openzeppelin's Ownable Contract](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol) in our `CryptoDevToken` contract
 
   ```bash
   npm install @openzeppelin/contracts
   ```
 
-- We will need to call the `Whitelist Contract` that you deployed for your previous level to check for addresses that were whitelisted and give them presale access. As we only need to call `mapping(address => bool) public whitelistedAddresses;` We can create an interface for `Whitelist contract` with a function only for this mapping, this way we would save `gas` as we would not need to inherit and deploy the entire `Whitelist Contract` but only a part of it.
+- We will need to call the `CryptoDevs Contract` that you deployed for your previous level to check for owners of CryptoDev NFT's. As we only need to call `tokenOfOwnerByIndex` and `balanceOf` methods, we can create an interface for `CryptoDevs contract` with only these two functions.This way we would save `gas` as we would not need to inherit and deploy the entire `CryptoDevs Contract` but only a part of it.
 
-- Create a new file inside the `contracts` direactory and call it `IWhitelist.sol`
+- Create a new file inside the `contracts` direactory and call it `ICryptoDevs.sol` and add the following lines
 
   ```go
   // SPDX-License-Identifier: MIT
-  pragma solidity ^0.8.0;
+  pragma solidity ^0.8.10;
 
-  interface IWhitelist {
-      function whitelistedAddresses(address) external view returns (bool);
+  interface ICryptoDevs {
+      /**
+       * @dev Returns a token ID owned by `owner` at a given `index` of its token list.
+       * Use along with {balanceOf} to enumerate all of ``owner``'s tokens.
+       */
+      function tokenOfOwnerByIndex(address owner, uint256 index)
+          external
+          view
+          returns (uint256 tokenId);
+
+      /**
+       * @dev Returns the number of tokens in ``owner``'s account.
+       */
+      function balanceOf(address owner) external view returns (uint256 balance);
   }
+
   ```
 
-- Create a new file inside the `contracts` directory called `CD.sol`.
+- Create a new file inside the `contracts` directory and call it `CryptoDevToken.sol` and add the following lines
 
   ```go
-     // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.4;
+    // SPDX-License-Identifier: MIT
+    pragma solidity ^0.8.10;
 
-    import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+    import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
     import "@openzeppelin/contracts/access/Ownable.sol";
-    import "./IWhitelist.sol";
+    import "./ICryptoDevs.sol";
 
-    contract CryptoDevs is ERC721, Ownable {
-    /**
-     * @dev _baseTokenURI for computing {tokenURI}. If set, the resulting URI for each
-     * token will be the concatenation of the `baseURI` and the `tokenId`.
-     */
-    string _baseTokenURI;
+    contract CryptoDevToken is ERC20, Ownable {
+        // Price of one Crypto Dev token
+        uint256 public constant tokenPrice = 0.001 ether;
+        // Each NFT would give the user 10 tokens
+        // It needs to be represented as 10 * (10 ** 18) as ERC20 tokens are represented by the smallest denomination possible for the token
+        // By default, ERC20 tokens have the smallest denomination of 10^(-18). This means, having a balance of (1)
+        // is actually equal to (10 ^ -18) tokens.
+        // Owning 1 full token is equivalent to owning (10^18) tokens when you account for the decimal places.
+        // More information on this can be found in the Freshman Track Cryptocurrency tutorial.
+        uint256 public constant tokensPerNFT = 10 * 10**18;
+        // the max total supply is 10000 for Crypto Dev Tokens
+        uint256 public constant maxTotalSupply = 10000 * 10**18;
+        // CryptoDevsNFT contract instance
+        ICryptoDevs CryptoDevsNFT;
+        // Mapping to keep track of which tokenIds have been claimed
+        mapping(uint256 => bool) public tokenIdsClaimed;
 
-    //  _price is the price of one Crypto Dev NFT
-    uint256 public _price = 0.01 ether;
+        constructor(address _cryptoDevsContract) ERC20("Crypto Dev Token", "CD") {
+            CryptoDevsNFT = ICryptoDevs(_cryptoDevsContract);
+        }
 
-    // _paused is used to pause the contract in case of an emergency
-    bool public _paused;
+        /**
+         * @dev Mints `amount` number of CryptoDevTokens
+         * Requirements:
+         * - `msg.value` should be equal or greater than the tokenPrice * amount
+         */
+        function mint(uint256 amount) public payable {
+            // the value of ether that should be equal or greater than tokenPrice * amount;
+            uint256 _requiredAmount = tokenPrice * amount;
+            require(msg.value >= _requiredAmount, "Ether sent is incorrect");
+            // total tokens + amount <= 10000, otherwise revert the transaction
+            uint256 amountWithDecimals = amount * 10**18;
+            require(
+                (totalSupply() + amountWithDecimals) <= maxTotalSupply,
+                "Exceeds the max total supply available."
+            );
+            // call the internal function from Openzeppelin's ERC20 contract
+            _mint(msg.sender, amountWithDecimals);
+        }
 
-    // max number of CryptoDevs
-    uint256 public maxTokenIds = 20;
+        /**
+         * @dev Mints tokens based on the number of NFT's held by the sender
+         * Requirements:
+         * balance of Crypto Dev NFT's owned by the sender should be greater than 0
+         * Tokens should have not been claimed for all the NFTs owned by the sender
+         */
+        function claim() public {
+            address sender = msg.sender;
+            // Get the number of CryptoDev NFT's held by a given sender address
+            uint256 balance = CryptoDevsNFT.balanceOf(sender);
+            // If the balance is zero, revert the transaction
+            require(balance > 0, "You dont own any Crypto Dev NFT's");
+            // amount keeps track of number of unclaimed tokenIds
+            uint256 amount = 0;
+            // loop over the balance and get the token ID owned by `sender` at a given `index` of its token list.
+            for (uint256 i = 0; i < balance; i++) {
+                uint256 tokenId = CryptoDevsNFT.tokenOfOwnerByIndex(sender, i);
+                // if the tokenId has not been claimed, increase the amount
+                if (!tokenIdsClaimed[tokenId]) {
+                    amount += 1;
+                    tokenIdsClaimed[tokenId] = true;
+                }
+            }
+            // If all the token Ids have been claimed, revert the transaction;
+            require(amount > 0, "You have already claimed all the tokens");
+            // call the internal function from Openzeppelin's ERC20 contract
+            // Mint (amount * 10) tokens for each NFT
+            _mint(msg.sender, amount * tokensPerNFT);
+        }
 
-    // total number of tokenIds minted
-    uint256 public tokenIds;
+        // Function to receive Ether. msg.data must be empty
+        receive() external payable {}
 
-    // Whitelist contract instance
-    IWhitelist whitelist;
-
-    // boolean to keep track of when presale started
-    bool public presaleStarted;
-
-    // timestamp for even presale would end
-    uint256 public presaleEnded;
-
-    modifier onlyWhenNotPaused {
-        require(!_paused, "Contract currently paused");
-        _;
+        // Fallback function is called when msg.data is not empty
+        fallback() external payable {}
     }
 
-    /**
-     * @dev ERC721 constructor takes in a `name` and a `symbol` to the token collection.
-     * name in our case is `Crypto Devs` and symbol is `CD`.
-     * Constructor for Crypto Devs takes in the baseURI to set _baseTokenURI for the collection.
-     * It also initializes an instance of whitelist interface.
-     */
-    constructor (string memory baseURI, address whitelistContract) ERC721("Crypto Devs", "CD") {
-        _baseTokenURI = baseURI;
-        whitelist = IWhitelist(whitelistContract);
-    }
-
-    /**
-    * @dev startPresale starts a presale for the whitelisted addresses
-     */
-    function startPresale() public onlyOwner {
-        presaleStarted = true;
-        // Set presaleEnded time as current timestamp + 5 minutes
-        // Solidity has cool syntax for timestamps (seconds, minutes, hours, days, years)
-        presaleEnded = block.timestamp + 5 minutes;
-    }
-
-    /**
-     * @dev presaleMint allows an user to mint one NFT per transaction during the presale.
-     */
-    function presaleMint() public payable onlyWhenNotPaused {
-        require(presaleStarted && block.timestamp < presaleEnded, "Presale is not running");
-        require(whitelist.whitelistedAddresses(msg.sender), "You are not whitelisted");
-        require(tokenIds < maxTokenIds, "Exceeded maximum Cypto Devs supply");
-        require(msg.value >= _price, "Ether sent is not correct");
-        tokenIds += 1;
-        //_safeMint is a safer version of the _mint function as it ensures that
-        // if the address being minted to is a contract, then it knows how to deal with ERC721 tokens
-        // If the address being minted to is not a contract, it works the same way as _mint
-        _safeMint(msg.sender, tokenIds);
-    }
-
-    /**
-    * @dev mint allows an user to mint 1 NFT per transaction after the presale has ended.
-    */
-    function mint() public payable onlyWhenNotPaused {
-        require(presaleStarted && block.timestamp >=  presaleEnded, "Presale has not ended yet");
-        require(tokenIds < maxTokenIds, "Exceed maximum Cypto Devs supply");
-        require(msg.value >= _price, "Ether sent is not correct");
-        tokenIds += 1;
-        _safeMint(msg.sender, tokenIds);
-    }
-
-    /**
-    * @dev _baseURI overides the Openzeppelin's ERC721 implementation which by default
-    * returned an empty string for the baseURI
-    */
-    function _baseURI() internal view virtual override returns (string memory) {
-        return _baseTokenURI;
-    }
-
-    /**
-    * @dev setPaused makes the contract paused or unpaused
-     */
-    function setPaused(bool val) public onlyOwner {
-        _paused = val;
-    }
-
-    /**
-    * @dev withdraw sends all the ether in the contract
-    * to the owner of the contract
-     */
-    function withdraw() public onlyOwner  {
-        address _owner = owner();
-        uint256 amount = address(this).balance;
-        (bool sent, ) =  _owner.call{value: amount}("");
-        require(sent, "Failed to send Ether");
-    }
-
-     // Function to receive Ether. msg.data must be empty
-    receive() external payable {}
-
-    // Fallback function is called when msg.data is not empty
-    fallback() external payable {}
-    }
   ```
 
 - Compile the contract, open up a terminal pointing at`hardhat-tutorial` directory and execute this command
 
-```bash
-   npx hardhat compile
-```
+  ```bash
+     npx hardhat compile
+  ```
 
 - Now we would install `dotenv` package to be able to import the env file and use it in our config. Open up a terminal pointing at`hardhat-tutorial` directory and execute this command
 
@@ -197,21 +174,18 @@ Hardhat is an Ethereum development environment and framework designed for full s
 
 - Now create a `.env` file in the `hardhat-tutorial` folder and add the following lines, use the instructions in the comments to get your Alchemy API Key URL and RINKEBY Private Key. Make sure that the account from which you get your rinkeby private key is funded with Rinkeby Ether.
 
-```
+  ```
 
-// Go to https://www.alchemyapi.io, sign up, create
-// a new App in its dashboard and select the network as Rinkeby, and replace "add-the-alchemy-key-url-here" with its key url
-ALCHEMY_API_KEY_URL="add-the-alchemy-key-url-here"
+  // Go to https://www.alchemyapi.io, sign up, create
+  // a new App in its dashboard and select the network as Rinkeby, and replace "add-the-alchemy-key-url-here" with its key url
+  ALCHEMY_API_KEY_URL="add-the-alchemy-key-url-here"
 
-// Replace this private key with your RINKEBY account private key
-// To export your private key from Metamask, open Metamask and
-// go to Account Details > Export Private Key
-// Be aware of NEVER putting real Ether into testing accounts
-RINKEBY_PRIVATE_KEY="add-the-rinkeby-private-key-here"
-
-// Address of the Whitelist Contract that you deployed
-WHITELIST_CONTRACT_ADDRESS="address-of-the-whitelist-contract"
-```
+  // Replace this private key with your RINKEBY account private key
+  // To export your private key from Metamask, open Metamask and
+  // go to Account Details > Export Private Key
+  // Be aware of NEVER putting real Ether into testing accounts
+  RINKEBY_PRIVATE_KEY="add-the-rinkeby-private-key-here"
+  ```
 
 - Lets deploy the contract to `rinkeby` network.Create a new file named `deploy.js` under the `scripts` folder
 
@@ -220,25 +194,29 @@ WHITELIST_CONTRACT_ADDRESS="address-of-the-whitelist-contract"
   ```js
   const { ethers } = require("hardhat");
   require("dotenv").config({ path: ".env" });
+  const { CRYPTO_DEVS_NFT_CONTRACT_ADDRESS } = require("../constants");
 
   async function main() {
-    const whitelistContract = process.env.WHITELIST_CONTRACT_ADDRESS;
-    /*
-    A ContractFactory in ethers.js is an abstraction used to deploy new smart contracts,
-    so cryptoDevsContract here is a factory for instances of our CryptoDevs contract.
-  */
-    const cryptoDevsContract = await ethers.getContractFactory("CryptoDevs");
+    // Address of the Crypto Devs NFT contract that you deployed in the previous module
+    const cryptoDevsNFTContract = CRYPTO_DEVS_NFT_CONTRACT_ADDRESS;
 
-    // here we deploy the contract
-    const deployedCryptoDevsContract = await cryptoDevsContract.deploy(
-      "https://cryptodevs.vercel.app/api/metadata/",
-      whitelistContract
+    /*
+      A ContractFactory in ethers.js is an abstraction used to deploy new smart contracts,
+      so cryptoDevsTokenContract here is a factory for instances of our CryptoDevToken contract.
+      */
+    const cryptoDevsTokenContract = await ethers.getContractFactory(
+      "CryptoDevToken"
+    );
+
+    // deploy the contract
+    const deployedCryptoDevsTokenContract = await cryptoDevsTokenContract.deploy(
+      cryptoDevsNFTContract
     );
 
     // print the address of the deployed contract
     console.log(
-      "Crypto Devs Contract Address:",
-      deployedCryptoDevsContract.address
+      "Crypto Devs Token Contract Address:",
+      deployedCryptoDevsTokenContract.address
     );
   }
 
@@ -251,32 +229,44 @@ WHITELIST_CONTRACT_ADDRESS="address-of-the-whitelist-contract"
     });
   ```
 
+- You would see that the `deploy.js` file requires a constant. Lets create a `constants` folder under `hardhat-tutorial` folder.
+- Inside the `constants` folder create a new file named `index.js` and add the following lines to it.
+
+  - Replace "address-of-the-nft-contract" with the address of the `CryptoDevs.sol` that you deployed in the previous module(`NFT-Collection`)
+
+  ```js
+  // Address of the NFT Contract that you deployed
+  const CRYPTO_DEVS_NFT_CONTRACT_ADDRESS = "address-of-the-nft-contract";
+
+  module.exports = { CRYPTO_DEVS_NFT_CONTRACT_ADDRESS };
+  ```
+
 - Now open the hardhat.config.js file, we would add the `rinkeby` network here so that we can deploy our contract to rinkeby. Replace all the lines in the `hardhart.config.js` file with the given below lines
 
-```js
-require("@nomiclabs/hardhat-waffle");
-require("dotenv").config({ path: ".env" });
+  ```js
+  require("@nomiclabs/hardhat-waffle");
+  require("dotenv").config({ path: ".env" });
 
-const ALCHEMY_API_KEY_URL = process.env.ALCHEMY_API_KEY_URL;
+  const ALCHEMY_API_KEY_URL = process.env.ALCHEMY_API_KEY_URL;
 
-const RINKEBY_PRIVATE_KEY = process.env.RINKEBY_PRIVATE_KEY;
+  const RINKEBY_PRIVATE_KEY = process.env.RINKEBY_PRIVATE_KEY;
 
-module.exports = {
-  solidity: "0.8.4",
-  networks: {
-    rinkeby: {
-      url: ALCHEMY_API_KEY_URL,
-      accounts: [RINKEBY_PRIVATE_KEY],
+  module.exports = {
+    solidity: "0.8.10",
+    networks: {
+      rinkeby: {
+        url: ALCHEMY_API_KEY_URL,
+        accounts: [RINKEBY_PRIVATE_KEY],
+      },
     },
-  },
-};
-```
+  };
+  ```
 
 - To deploy, open up a terminal pointing at`hardhat-tutorial` directory and execute this command
   ```bash
       npx hardhat run scripts/deploy.js --network rinkeby
   ```
-- Save the Crypto Devs Contract Address that was printed on your terminal in your notepad, you would need it futher down in the tutorial.
+- Save the CryptoDevToken Contract Address that was printed on your terminal in your notepad, you would need it futher down in the tutorial.
 
 ### Website
 
@@ -284,7 +274,7 @@ module.exports = {
 - First, You would need to create a new `next` app. Your folder structure should look something like
 
   ```
-     - Crypto-Devs-Dapp
+     - ICO
          - hardhat-tutorial
          - next-app
   ```
@@ -309,17 +299,17 @@ module.exports = {
 - Now lets install Web3Modal library(https://github.com/Web3Modal/web3modal). Web3Modal is an easy-to-use library to help developers add support for multiple providers in their apps with a simple customizable configuration. By default Web3Modal Library supports injected providers like (Metamask, Dapper, Gnosis Safe, Frame, Web3 Browsers, etc), You can also easily configure the library to support Portis, Fortmatic, Squarelink, Torus, Authereum, D'CENT Wallet and Arkane.
   Open up a terminal pointing at`my-app` directory and execute this command
 
-```bash
-  npm install web3modal
-```
+  ```bash
+    npm install web3modal
+  ```
 
 - In the same terminal also install `ethers.js`
 
-```bash
-npm i ethers
-```
+  ```bash
+  npm i ethers
+  ```
 
-- In your public folder, download this folder and all the images in it (https://github.com/LearnWeb3DAO/NFT-Collection/tree/main/my-app/public/cryptodevs). Make sure that the name of the downloaded folder is cryptodevs
+- In your public folder, download the following image (https://github.com/LearnWeb3DAO/NFT-Collection/tree/main/my-app/public/cryptodevs/0.svg). Make sure that the name of the downloaded image is `0.svg`
 
 - Now go to styles folder and replace all the contents of `Home.modules.css` file with the following code, this would add some styling to your dapp:
 
@@ -347,6 +337,15 @@ npm i ethers
     margin-left: 20%;
   }
 
+  .input {
+    width: 200px;
+    height: 100%;
+    padding: 1%;
+    margin-bottom: 2%;
+    box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
+    border-radius: 10px;
+  }
+
   .title {
     font-size: 2rem;
     margin: 2rem 0;
@@ -364,8 +363,8 @@ npm i ethers
     border: none;
     color: #ffffff;
     font-size: 15px;
-    padding: 20px;
-    width: 200px;
+    padding: 5px;
+    width: 100px;
     cursor: pointer;
     margin-bottom: 2%;
   }
@@ -381,403 +380,376 @@ npm i ethers
 
 - Open you index.js file under the pages folder and paste the following code, explanation of the code can be found in the comments.
 
-  ```js
-  import { Contract, providers, utils } from "ethers";
-  import Head from "next/head";
-  import React, { useEffect, useRef, useState } from "react";
-  import Web3Modal from "web3modal";
-  import { abi, NFT_CONTRACT_ADDRESS } from "../constants";
-  import styles from "../styles/Home.module.css";
+```javascript=
+import { BigNumber, Contract, providers, utils } from "ethers";
+import Head from "next/head";
+import React, { useEffect, useRef, useState } from "react";
+import Web3Modal from "web3modal";
+import {
+  NFT_CONTRACT_ABI,
+  NFT_CONTRACT_ADDRESS,
+  TOKEN_CONTRACT_ABI,
+  TOKEN_CONTRACT_ADDRESS,
+} from "../constants";
+import styles from "../styles/Home.module.css";
 
-  export default function Home() {
-    // walletConnected keep track of whether the user's wallet is connected or not
-    const [walletConnected, setWalletConnected] = useState(false);
-    // presaleStarted keeps track of whether the presale has started or not
-    const [presaleStarted, setPresaleStarted] = useState(false);
-    // presaleEnded keeps track of whether the presale ended
-    const [presaleEnded, setPresaleEnded] = useState(false);
-    // loading is set to true when we are waiting for a transaction to get mined
-    const [loading, setLoading] = useState(false);
-    // checks if the currently connected MetaMask wallet is the owner of the contract
-    const [isOwner, setIsOwner] = useState(false);
-    // tokenIdsMinted keeps track of the number of tokenIds that have been minted
-    const [tokenIdsMinted, setTokenIdsMinted] = useState("0");
-    // Create a reference to the Web3 Modal (used for connecting to Metamask) which persists as long as the page is open
-    const web3ModalRef = useRef();
+export default function Home() {
+  // Create a BigNumber `0`
+  const zero = BigNumber.from(0);
+  // walletConnected keeps track of whether the user's wallet is connected or not
+  const [walletConnected, setWalletConnected] = useState(false);
+  // loading is set to true when we are waiting for a transaction to get mined
+  const [loading, setLoading] = useState(false);
+  // tokensToBeClaimed keeps track of the number of tokens that can be claimed
+  // based on the Crypto Dev NFT's held by the user for which they havent claimed the tokens
+  const [tokensToBeClaimed, setTokensToBeClaimed] = useState(zero);
+  // balanceOfCryptoDevTokens keeps track of number of Crypto Dev tokens owned by an address
+  const [balanceOfCryptoDevTokens, setBalanceOfCryptoDevTokens] = useState(
+    zero
+  );
+  // amount of the tokens that the user wants to mint
+  const [tokenAmount, setTokenAmount] = useState(zero);
+  // tokensMinted is the total number of tokens that have been minted till now out of 10000(max total supply)
+  const [tokensMinted, setTokensMinted] = useState(zero);
+  // Create a reference to the Web3 Modal (used for connecting to Metamask) which persists as long as the page is open
+  const web3ModalRef = useRef();
 
-    /**
-     * presaleMint: Mint an NFT during the presale
-     */
-    const presaleMint = async () => {
-      try {
-        // We need a Signer here since this is a 'write' transaction.
-        const signer = await getProviderOrSigner(true);
-        // Create a new instance of the Contract with a Signer, which allows
-        // update methods
-        const whitelistContract = new Contract(
-          NFT_CONTRACT_ADDRESS,
-          abi,
-          signer
-        );
-        // call the presaleMint from the contract, only whitelisted addresses would be able to mint
-        const tx = await whitelistContract.presaleMint({
-          // value signifies the cost of one crypto dev which is "0.01" eth.
-          // We are parsing `0.01` string to ether using the utils library from ethers.js
-          value: utils.parseEther("0.01"),
-        });
-        setLoading(true);
-        // wait for the transaction to get mined
-        await tx.wait();
-        setLoading(false);
-        window.alert("You successfully minted a Crypto Dev!");
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    /**
-     * publicMint: Mint an NFT after the presale
-     */
-    const publicMint = async () => {
-      try {
-        // We need a Signer here since this is a 'write' transaction.
-        const signer = await getProviderOrSigner(true);
-        // Create a new instance of the Contract with a Signer, which allows
-        // update methods
-        const whitelistContract = new Contract(
-          NFT_CONTRACT_ADDRESS,
-          abi,
-          signer
-        );
-        // call the mint from the contract to mint the Crypto Dev
-        const tx = await whitelistContract.mint({
-          // value signifies the cost of one crypto dev which is "0.01" eth.
-          // We are parsing `0.01` string to ether using the utils library from ethers.js
-          value: utils.parseEther("0.01"),
-        });
-        setLoading(true);
-        // wait for the transaction to get mined
-        await tx.wait();
-        setLoading(false);
-        window.alert("You successfully minted a Crypto Dev!");
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    /*
-        connectWallet: Connects the MetaMask wallet
-      */
-    const connectWallet = async () => {
-      try {
-        // Get the provider from web3Modal, which in our case is MetaMask
-        // When used for the first time, it prompts the user to connect their wallet
-        await getProviderOrSigner();
-        setWalletConnected(true);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    /**
-     * startPresale: starts the presale for the NFT Collection
-     */
-    const startPresale = async () => {
-      try {
-        // We need a Signer here since this is a 'write' transaction.
-        const signer = await getProviderOrSigner(true);
-        // Create a new instance of the Contract with a Signer, which allows
-        // update methods
-        const whitelistContract = new Contract(
-          NFT_CONTRACT_ADDRESS,
-          abi,
-          signer
-        );
-        // call the startPresale from the contract
-        const tx = await whitelistContract.startPresale();
-        setLoading(true);
-        // wait for the transaction to get mined
-        await tx.wait();
-        setLoading(false);
-        // set the presale started to true
-        await checkIfPresaleStarted();
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    /**
-     * checkIfPresaleStarted: checks if the presale has started by quering the `presaleStarted`
-     * variable in the contract
-     */
-    const checkIfPresaleStarted = async () => {
-      try {
-        // Get the provider from web3Modal, which in our case is MetaMask
-        // No need for the Signer here, as we are only reading state from the blockchain
-        const provider = await getProviderOrSigner();
-        // We connect to the Contract using a Provider, so we will only
-        // have read-only access to the Contract
-        const nftContract = new Contract(NFT_CONTRACT_ADDRESS, abi, provider);
-        // call the presaleStarted from the contract
-        const _presaleStarted = await nftContract.presaleStarted();
-        if (!_presaleStarted) {
-          await getOwner();
-        }
-        setPresaleStarted(_presaleStarted);
-        return _presaleStarted;
-      } catch (err) {
-        console.error(err);
-        return false;
-      }
-    };
-
-    /**
-     * checkIfPresaleEnded: checks if the presale has ended by quering the `presaleEnded`
-     * variable in the contract
-     */
-    const checkIfPresaleEnded = async () => {
-      try {
-        // Get the provider from web3Modal, which in our case is MetaMask
-        // No need for the Signer here, as we are only reading state from the blockchain
-        const provider = await getProviderOrSigner();
-        // We connect to the Contract using a Provider, so we will only
-        // have read-only access to the Contract
-        const nftContract = new Contract(NFT_CONTRACT_ADDRESS, abi, provider);
-        // call the presaleEnded from the contract
-        const _presaleEnded = await nftContract.presaleEnded();
-        // _presaleEnded is a Big Number, so we are using the lt(less than function) insteal of `<`
-        // Date.now()/1000 returns the current time in seconds
-        // We compare if the _presaleEnded timestamp is less than the current time
-        // which means presale has ended
-        const hasEnded = _presaleEnded.lt(Math.floor(Date.now() / 1000));
-        if (hasEnded) {
-          setPresaleEnded(true);
-        } else {
-          setPresaleEnded(false);
-        }
-        return hasEnded;
-      } catch (err) {
-        console.error(err);
-        return false;
-      }
-    };
-
-    /**
-     * getOwner: calls the contract to retrieve the owner
-     */
-    const getOwner = async () => {
-      try {
-        // Get the provider from web3Modal, which in our case is MetaMask
-        // No need for the Signer here, as we are only reading state from the blockchain
-        const provider = await getProviderOrSigner();
-        // We connect to the Contract using a Provider, so we will only
-        // have read-only access to the Contract
-        const nftContract = new Contract(NFT_CONTRACT_ADDRESS, abi, provider);
-        // call the owner function from the contract
-        const _owner = await nftContract.owner();
-        // We will get the signer now to extract the address of the currently connected MetaMask account
-        const signer = await getProviderOrSigner(true);
-        // Get the address associated to the signer which is connected to  MetaMask
-        const address = await signer.getAddress();
-        if (address.toLowerCase() === _owner.toLowerCase()) {
-          setIsOwner(true);
-        }
-      } catch (err) {
-        console.error(err.message);
-      }
-    };
-
-    /**
-     * getTokenIdsMinted: gets the number of tokenIds that have been minted
-     */
-    const getTokenIdsMinted = async () => {
-      try {
-        // Get the provider from web3Modal, which in our case is MetaMask
-        // No need for the Signer here, as we are only reading state from the blockchain
-        const provider = await getProviderOrSigner();
-        // We connect to the Contract using a Provider, so we will only
-        // have read-only access to the Contract
-        const nftContract = new Contract(NFT_CONTRACT_ADDRESS, abi, provider);
-        // call the tokenIds from the contract
-        const _tokenIds = await nftContract.tokenIds();
-        //_tokenIds is a `Big Number`. We need to convert the Big Number to a string
-        setTokenIdsMinted(_tokenIds.toString());
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    /**
-     * Returns a Provider or Signer object representing the Ethereum RPC with or without the
-     * signing capabilities of metamask attached
-     *
-     * A `Provider` is needed to interact with the blockchain - reading transactions, reading balances, reading state, etc.
-     *
-     * A `Signer` is a special type of Provider used in case a `write` transaction needs to be made to the blockchain, which involves the connected account
-     * needing to make a digital signature to authorize the transaction being sent. Metamask exposes a Signer API to allow your website to
-     * request signatures from the user using Signer functions.
-     *
-     * @param {*} needSigner - True if you need the signer, default false otherwise
-     */
-    const getProviderOrSigner = async (needSigner = false) => {
-      // Connect to Metamask
-      // Since we store `web3Modal` as a reference, we need to access the `current` value to get access to the underlying object
-      const provider = await web3ModalRef.current.connect();
-      const web3Provider = new providers.Web3Provider(provider);
-
-      // If user is not connected to the Rinkeby network, let them know and throw an error
-      const { chainId } = await web3Provider.getNetwork();
-      if (chainId !== 4) {
-        window.alert("Change the network to Rinkeby");
-        throw new Error("Change network to Rinkeby");
-      }
-
-      if (needSigner) {
-        const signer = web3Provider.getSigner();
-        return signer;
-      }
-      return web3Provider;
-    };
-
-    // useEffects are used to react to changes in state of the website
-    // The array at the end of function call represents what state changes will trigger this effect
-    // In this case, whenever the value of `walletConnected` changes - this effect will be called
-    useEffect(() => {
-      // if wallet is not connected, create a new instance of Web3Modal and connect the MetaMask wallet
-      if (!walletConnected) {
-        // Assign the Web3Modal class to the reference object by setting it's `current` value
-        // The `current` value is persisted throughout as long as this page is open
-        web3ModalRef.current = new Web3Modal({
-          network: "rinkeby",
-          providerOptions: {},
-          disableInjectedProvider: false,
-        });
-        connectWallet();
-
-        // Check if presale has started and ended
-        const _presaleStarted = checkIfPresaleStarted();
-        if (_presaleStarted) {
-          checkIfPresaleEnded();
-        }
-
-        getTokenIdsMinted();
-
-        // Set an interval which gets called every 5 seconds to check presale has ended
-        const presaleEndedInterval = setInterval(async function () {
-          const _presaleStarted = await checkIfPresaleStarted();
-          if (_presaleStarted) {
-            const _presaleEnded = await checkIfPresaleEnded();
-            if (_presaleEnded) {
-              clearInterval(presaleEndedInterval);
-            }
+  /**
+   * getTokensToBeClaimed: checks the balance of tokens that can be claimed by the user
+   */
+  const getTokensToBeClaimed = async () => {
+    try {
+      // Get the provider from web3Modal, which in our case is MetaMask
+      // No need for the Signer here, as we are only reading state from the blockchain
+      const provider = await getProviderOrSigner();
+      // Create an instance of NFT Contract
+      const nftContract = new Contract(
+        NFT_CONTRACT_ADDRESS,
+        NFT_CONTRACT_ABI,
+        provider
+      );
+      // Create an instance of tokenContract
+      const tokenContract = new Contract(
+        TOKEN_CONTRACT_ADDRESS,
+        TOKEN_CONTRACT_ABI,
+        provider
+      );
+      // We will get the signer now to extract the address of the currently connected MetaMask account
+      const signer = await getProviderOrSigner(true);
+      // Get the address associated to the signer which is connected to  MetaMask
+      const address = await signer.getAddress();
+      // call the balanceOf from the NFT contract to get the number of NFT's held by the user
+      const balance = await nftContract.balanceOf(address);
+      // balance is a Big number and thus we would compare it with Big number `zero`
+      if (balance === zero) {
+        setTokensToBeClaimed(zero);
+      } else {
+        // amount keeps track of the number of unclaimed tokens
+        var amount = 0;
+        // For all the NFT's, check if the tokens have already been claimed
+        // Only increase the amount if the tokens have not been claimed
+        // for a an NFT(for a given tokenId)
+        for (var i = 0; i < balance; i++) {
+          const tokenId = await nftContract.tokenOfOwnerByIndex(address, i);
+          const claimed = await tokenContract.tokenIdsClaimed(tokenId);
+          if (!claimed) {
+            amount++;
           }
-        }, 5 * 1000);
-
-        // set an interval to get the number of token Ids minted every 5 seconds
-        setInterval(async function () {
-          await getTokenIdsMinted();
-        }, 5 * 1000);
+        }
+        //tokensToBeClaimed has been initialized to a Big Number, thus we would convert amount
+        // to a big number and then set its value
+        setTokensToBeClaimed(BigNumber.from(amount));
       }
-    }, [walletConnected]);
+    } catch (err) {
+      console.error(err);
+      setTokensToBeClaimed(zero);
+    }
+  };
 
-    /*
-        renderButton: Returns a button based on the state of the dapp
-      */
-    const renderButton = () => {
-      // If wallet is not connected, return a button which allows them to connect their wllet
-      if (!walletConnected) {
-        return (
-          <button onClick={connectWallet} className={styles.button}>
-            Connect your wallet
-          </button>
-        );
-      }
+  /**
+   * getBalanceOfCryptoDevTokens: checks the balance of Crypto Dev Tokens's held by an address
+   */
+  const getBalanceOfCryptoDevTokens = async () => {
+    try {
+      // Get the provider from web3Modal, which in our case is MetaMask
+      // No need for the Signer here, as we are only reading state from the blockchain
+      const provider = await getProviderOrSigner();
+      // Create an instace of token contract
+      const tokenContract = new Contract(
+        TOKEN_CONTRACT_ADDRESS,
+        TOKEN_CONTRACT_ABI,
+        provider
+      );
+      // We will get the signer now to extract the address of the currently connected MetaMask account
+      const signer = await getProviderOrSigner(true);
+      // Get the address associated to the signer which is connected to  MetaMask
+      const address = await signer.getAddress();
+      // call the balanceOf from the token contract to get the number of tokens held by the user
+      const balance = await tokenContract.balanceOf(address);
+      // balance is already a big number, so we dont need to convert it before setting it
+      setBalanceOfCryptoDevTokens(balance);
+    } catch (err) {
+      console.error(err);
+      setBalanceOfCryptoDevTokens(zero);
+    }
+  };
 
-      // If we are currently waiting for something, return a loading button
-      if (loading) {
-        return <button className={styles.button}>Loading...</button>;
-      }
+  /**
+   * mintCryptoDevToken: mints `amount` number of tokens to a given address
+   */
+  const mintCryptoDevToken = async (amount) => {
+    try {
+      // We need a Signer here since this is a 'write' transaction.
+      // Create an instance of tokenContract
+      const signer = await getProviderOrSigner(true);
+      // Create an instance of tokenContract
+      const tokenContract = new Contract(
+        TOKEN_CONTRACT_ADDRESS,
+        TOKEN_CONTRACT_ABI,
+        signer
+      );
+      // Each token is of `0.001 ether`. The value we need to send is `0.001 * amount`
+      const value = 0.001 * amount;
+      const tx = await tokenContract.mint(amount, {
+        // value signifies the cost of one crypto dev token which is "0.001" eth.
+        // We are parsing `0.001` string to ether using the utils library from ethers.js
+        value: utils.parseEther(value.toString()),
+      });
+      setLoading(true);
+      // wait for the transaction to get mined
+      await tx.wait();
+      setLoading(false);
+      window.alert("Sucessfully minted Crypto Dev Tokens");
+      await getBalanceOfCryptoDevTokens();
+      await getTotalTokensMinted();
+      await getTokensToBeClaimed();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-      // If connected user is the owner, and presale hasnt started yet, allow them to start the presale
-      if (isOwner && !presaleStarted) {
-        return (
-          <button className={styles.button} onClick={startPresale}>
-            Start Presale!
-          </button>
-        );
-      }
+  /**
+   * claimCryptoDevTokens: Helps the user claim Crypto Dev Tokens
+   */
+  const claimCryptoDevTokens = async () => {
+    try {
+      // We need a Signer here since this is a 'write' transaction.
+      // Create an instance of tokenContract
+      const signer = await getProviderOrSigner(true);
+      // Create an instance of tokenContract
+      const tokenContract = new Contract(
+        TOKEN_CONTRACT_ADDRESS,
+        TOKEN_CONTRACT_ABI,
+        signer
+      );
+      const tx = await tokenContract.claim();
+      setLoading(true);
+      // wait for the transaction to get mined
+      await tx.wait();
+      setLoading(false);
+      window.alert("Sucessfully claimed Crypto Dev Tokens");
+      await getBalanceOfCryptoDevTokens();
+      await getTotalTokensMinted();
+      await getTokensToBeClaimed();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-      // If connected user is not the owner but presale hasn't started yet, tell them that
-      if (!presaleStarted) {
-        return (
-          <div>
-            <div className={styles.description}>Presale hasnt started!</div>
+  /**
+   * getTotalTokensMinted: Retrieves how many tokens have been minted till now
+   * out of the total supply
+   */
+  const getTotalTokensMinted = async () => {
+    try {
+      // Get the provider from web3Modal, which in our case is MetaMask
+      // No need for the Signer here, as we are only reading state from the blockchain
+      const provider = await getProviderOrSigner();
+      // Create an instance of token contract
+      const tokenContract = new Contract(
+        TOKEN_CONTRACT_ADDRESS,
+        TOKEN_CONTRACT_ABI,
+        provider
+      );
+      // Get all the tokens that have been minted
+      const _tokensMinted = await tokenContract.totalSupply();
+      setTokensMinted(_tokensMinted);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  /**
+   * Returns a Provider or Signer object representing the Ethereum RPC with or without the
+   * signing capabilities of metamask attached
+   *
+   * A `Provider` is needed to interact with the blockchain - reading transactions, reading balances, reading state, etc.
+   *
+   * A `Signer` is a special type of Provider used in case a `write` transaction needs to be made to the blockchain, which involves the connected account
+   * needing to make a digital signature to authorize the transaction being sent. Metamask exposes a Signer API to allow your website to
+   * request signatures from the user using Signer functions.
+   *
+   * @param {*} needSigner - True if you need the signer, default false otherwise
+   */
+  const getProviderOrSigner = async (needSigner = false) => {
+    // Connect to Metamask
+    // Since we store `web3Modal` as a reference, we need to access the `current` value to get access to the underlying object
+    const provider = await web3ModalRef.current.connect();
+    const web3Provider = new providers.Web3Provider(provider);
+
+    // If user is not connected to the Rinkeby network, let them know and throw an error
+    const { chainId } = await web3Provider.getNetwork();
+    if (chainId !== 4) {
+      window.alert("Change the network to Rinkeby");
+      throw new Error("Change network to Rinkeby");
+    }
+
+    if (needSigner) {
+      const signer = web3Provider.getSigner();
+      return signer;
+    }
+    return web3Provider;
+  };
+
+  /*
+    connectWallet: Connects the MetaMask wallet
+  */
+  const connectWallet = async () => {
+    try {
+      // Get the provider from web3Modal, which in our case is MetaMask
+      // When used for the first time, it prompts the user to connect their wallet
+      await getProviderOrSigner();
+      setWalletConnected(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // useEffects are used to react to changes in state of the website
+  // The array at the end of function call represents what state changes will trigger this effect
+  // In this case, whenever the value of `walletConnected` changes - this effect will be called
+  useEffect(() => {
+    // if wallet is not connected, create a new instance of Web3Modal and connect the MetaMask wallet
+    if (!walletConnected) {
+      // Assign the Web3Modal class to the reference object by setting it's `current` value
+      // The `current` value is persisted throughout as long as this page is open
+      web3ModalRef.current = new Web3Modal({
+        network: "rinkeby",
+        providerOptions: {},
+        disableInjectedProvider: false,
+      });
+      connectWallet();
+      getTotalTokensMinted();
+      getBalanceOfCryptoDevTokens();
+      getTokensToBeClaimed();
+    }
+  }, [walletConnected]);
+
+  /*
+    renderButton: Returns a button based on the state of the dapp
+  */
+  const renderButton = () => {
+    // If we are currently waiting for something, return a loading button
+    if (loading) {
+      return (
+        <div>
+          <button className={styles.button}>Loading...</button>
+        </div>
+      );
+    }
+    // If tokens to be claimed are greater than 0, Return a claim button
+    if (tokensToBeClaimed > 0) {
+      return (
+        <div>
+          <div className={styles.description}>
+            {tokensToBeClaimed * 10} Tokens can be claimed!
           </div>
-        );
-      }
-
-      // If presale started, but hasn't ended yet, allow for minting during the presale period
-      if (presaleStarted && !presaleEnded) {
-        return (
-          <div>
-            <div className={styles.description}>
-              Presale has started!!! If your address is whitelisted, Mint a
-              Crypto Dev 🥳
-            </div>
-            <button className={styles.button} onClick={presaleMint}>
-              Presale Mint 🚀
-            </button>
-          </div>
-        );
-      }
-
-      // If presale started and has ended, its time for public minting
-      if (presaleStarted && presaleEnded) {
-        return (
-          <button className={styles.button} onClick={publicMint}>
-            Public Mint 🚀
+          <button className={styles.button} onClick={claimCryptoDevTokens}>
+            Claim Tokens
           </button>
-        );
-      }
-    };
-
+        </div>
+      );
+    }
+    // If user doesnt have any tokens to claim, show the mint button
     return (
-      <div>
-        <Head>
-          <title>Crypto Devs</title>
-          <meta name="description" content="Whitelist-Dapp" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-        <div className={styles.main}>
-          <div>
-            <h1 className={styles.title}>Welcome to Crypto Devs!</h1>
-            <div className={styles.description}>
-              Its an NFT collection for developers in Crypto.
-            </div>
-            <div className={styles.description}>
-              {tokenIdsMinted}/20 have been minted
-            </div>
-            {renderButton()}
-          </div>
-          <div>
-            <img className={styles.image} src="./cryptodevs/0.svg" />
-          </div>
+      <div style={{ display: "flex-col" }}>
+        <div>
+          <input
+            type="number"
+            placeholder="Amount of Tokens"
+            onChange={(e) => setTokenAmount(BigNumber.from(e.target.value))}
+            className={styles.input}
+          />
         </div>
 
-        <footer className={styles.footer}>
-          Made with &#10084; by Crypto Devs
-        </footer>
+        <button
+          className={styles.button}
+          disabled={!(tokenAmount > 0)}
+          onClick={() => mintCryptoDevToken(tokenAmount)}
+        >
+          Mint Tokens
+        </button>
       </div>
     );
-  }
-  ```
+  };
+
+  return (
+    <div>
+      <Head>
+        <title>Crypto Devs</title>
+        <meta name="description" content="ICO-Dapp" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <div className={styles.main}>
+        <div>
+          <h1 className={styles.title}>Welcome to Crypto Devs ICO!</h1>
+          <div className={styles.description}>
+            You can claim or mint Crypto Dev tokens here
+          </div>
+          {walletConnected ? (
+            <div>
+              <div className={styles.description}>
+                You have minted {utils.formatEther(balanceOfCryptoDevTokens)}{" "}
+                Crypto Dev Tokens
+              </div>
+              <div className={styles.description}>
+                Overall {utils.formatEther(tokensMinted)}/10000 have been
+                minted!!!
+              </div>
+              {renderButton()}
+            </div>
+          ) : (
+            <button onClick={connectWallet} className={styles.button}>
+              Connect your wallet
+            </button>
+          )}
+        </div>
+        <div>
+          <img className={styles.image} src="./0.svg" />
+        </div>
+      </div>
+
+      <footer className={styles.footer}>
+        Made with &#10084; by Crypto Devs
+      </footer>
+    </div>
+  );
+}
+
+```
 
 - Now create a new folder under the my-app folder and name it `constants`.
-- In the constants folder create a file, `index.js` and paste the following code. Replace `"addres of your NFT contract"` with the address of the CryptoDevs contract that you deployed and saved to your notepad. Replace `---your abi---` with the abi of your CryptoDevs Contract. To get the abi for your contract, go to your `hardhat-tutorial/artifacts/contracts/CryptoDevs.sol` folder and from your `CryptoDevs.json` file get the array marked under the `"abi"` key.
+- In the constants folder create a file, `index.js` and paste the following code.
+
+  - Replace `"abi-of-your-nft-contract"` with the abi of the NFT contract that you deployed in the last tutorial.
+  - Replace `"address-of-your-nft-contract"` with the address of the NFT contract that you deployed in your previous tutorial.
+  - Replace `"abi-of-your-token-contract"` by the abi of the token contract. To get the abi of the Token contract, go to `hardhat-tutorial/artifacts/contracts/CryptoDevToken.sol` and then from`CryptoDevToken.json` file get the array marked under the `"abi"` key.
+  - Replace `"address-of-your-token-contract"` with the address of the token contract that you saved to your notepad, early on in the tutorial
 
   ```js
-  export const abi =---your abi---
-  export const NFT_CONTRACT_ADDRESS = = "addres of your NFT contract"
+  export const NFT_CONTRACT_ABI = "abi-of-your-nft-contract";
+  export const NFT_CONTRACT_ADDRESS = "address-of-your-nft-contract";
+  export const TOKEN_CONTRACT_ABI = "abi-of-your-token-contract";
+  export const TOKEN_CONTRACT_ADDRESS = "address-of-your-token-contract";
   ```
 
 - Now in your terminal which is pointing to `my-app` folder, execute
@@ -786,7 +758,13 @@ npm i ethers
   npm run dev
   ```
 
-Your whitelist dapp should now work without errors 🚀
+Your ICO dapp should now work without errors 🚀
+
+---
+
+## Push to git
+
+Make sure you push all the code to github before proceeding.
 
 ---
 
@@ -796,9 +774,11 @@ We will now deploy your dApp, so that everyone can see your website and you can 
 
 - Go to https://vercel.com/ and sign in with your GitHub
 - Then click on `New Project` button and then select your Whitelist dApp repo
-- ![](https://i.imgur.com/ZRjfkCE.png)
 - When configuring your new project, Vercel will allow you to customize your `Root Directory`
 - Click `Edit` next to `Root Directory` and set it to `my-app`
+- Select the `Framework Preset` as `Next.js`
+  ![](https://i.imgur.com/2oJRKgO.png)
+
 - Click `Deploy`
 - Now you can see your deployed website by going to your dashboard, selecting your project, and copying the URL from there!
 

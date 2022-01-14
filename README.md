@@ -783,4 +783,4 @@ We will now deploy your dApp, so that everyone can see your website and you can 
 
 ## CONGRATULATIONS! You're all done! 
 
-Hopefully you enjoyed this tutorial. Don't forget to share your DAO website in the `#showcase` channel on Discord :D
+Hopefully you enjoyed this tutorial. Don't forget to share your ICO website in the `#showcase` channel on Discord :D

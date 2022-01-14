@@ -241,7 +241,7 @@ To build the smart contract we would be using [Hardhat](https://hardhat.org/).Ha
   module.exports = { CRYPTO_DEVS_NFT_CONTRACT_ADDRESS };
   ```
 
-- Now open the hardhat.config.js file, we would add the `rinkeby` network here so that we can deploy our contract to rinkeby. Replace all the lines in the `hardhart.config.js` file with the given below lines
+- Now open the `hardhat.config.js` file, we would add the `rinkeby` network here so that we can deploy our contract to rinkeby. Replace all the lines in the `hardhat.config.js` file with the given below lines
 
   ```js
   require("@nomiclabs/hardhat-waffle");
@@ -276,10 +276,10 @@ To build the smart contract we would be using [Hardhat](https://hardhat.org/).Ha
   ```
      - ICO
          - hardhat-tutorial
-         - next-app
+         - my-app
   ```
 
-- To create this `next-app`, in the terminal point to Whitelist-Dapp folder and type
+- To create this `my-app`, in the terminal point to Whitelist-Dapp folder and type
 
   ```bash
       npx create-next-app@latest
@@ -380,7 +380,7 @@ To build the smart contract we would be using [Hardhat](https://hardhat.org/).Ha
 
 - Open you index.js file under the pages folder and paste the following code, explanation of the code can be found in the comments.
 
-```javascript=
+```javascript
 import { BigNumber, Contract, providers, utils } from "ethers";
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from "react";
@@ -762,9 +762,8 @@ Your ICO dapp should now work without errors 🚀
 
 ---
 
-## Push to git
-
-Make sure you push all the code to github before proceeding.
+## Push to Github
+Make sure to push all this code to Github before proceeding to the next step.
 
 ---
 
@@ -782,4 +781,6 @@ We will now deploy your dApp, so that everyone can see your website and you can 
 - Click `Deploy`
 - Now you can see your deployed website by going to your dashboard, selecting your project, and copying the URL from there!
 
-Share your website in Discord :D
+## CONGRATULATIONS! You're all done! 
+
+Hopefully you enjoyed this tutorial. Don't forget to share your DAO website in the `#showcase` channel on Discord :D

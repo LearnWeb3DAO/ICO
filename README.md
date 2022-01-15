@@ -37,14 +37,24 @@ To build the smart contract we would be using [Hardhat](https://hardhat.org/).Ha
   npm init --yes
   npm install --save-dev hardhat
   ```
-
-  In the same directory where you installed Hardhat run the following command on your terminal:
+- In the same directory where you installed Hardhat run:
 
   ```bash
   npx hardhat
   ```
 
-  and press `enter` for all the questions.
+  - Select `Create a basic sample project`
+  - Press enter for the already specified `Hardhat Project root`
+  - Press enter for the question on if you want to add a `.gitignore`
+  - Press enter for `Do you want to install this sample project's dependencies with npm (@nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs/hardhat-ethers ethers)?`
+
+Now you have a hardhat project ready to go!
+
+If you are not on mac, please do this extra step and install these libraries as well :)
+
+```bash
+npm install --save-dev @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs/hardhat-ethers ethers
+```
 
 - In the same terminal now install `@openzeppelin/contracts` as we would be importing [Openzeppelin's ERC20 Contract](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol) and [Openzeppelin's Ownable Contract](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol) in our `CryptoDevToken` contract
 

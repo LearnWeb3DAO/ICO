@@ -791,7 +791,7 @@ Make sure to push all this [code to Github before proceeding to the next step](h
 We will now deploy your dApp, so that everyone can see your website and you can share it with all of your LearnWeb3 DAO friends.
 
 - Go to https://vercel.com/ and sign in with your GitHub
-- Then click on `New Project` button and then select your Whitelist dApp repo
+- Then click on `New Project` button and then select your ICO dApp repo
 - When configuring your new project, Vercel will allow you to customize your `Root Directory`
 - Click `Edit` next to `Root Directory` and set it to `my-app`
 - Select the `Framework Preset` as `Next.js`

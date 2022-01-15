@@ -2,6 +2,8 @@
 
 Now its time for you to launch a token for `Crypto Devs`. Lets call the token Crypto Dev Token.
 
+![](https://i.imgur.com/78uY3Mm.png)
+
 ## Requirements
 
 - There should be a max of `10,000 CD` tokens.
@@ -15,11 +17,16 @@ Lets start building 🚀
 
 - You can have completed the [NFT-Collection tutorial](https://github.com/LearnWeb3DAO/NFT-Collection)
 
+## Theory
+
+- What is an ERC20?
+  - ERC-20 is a technical standard; it is used for all smart contracts on the Ethereum blockchain for token implementation and provides a list of rules that all Ethereum-based tokens must follow.
+  - Please look at all the ERC20 [functions](https://docs.openzeppelin.com/contracts/2.x/api/token/erc20) before moving ahead
+
 ## Build
 
 ### Smart Contract
 
-First before we start building you would need to understand what an ERC20 is and why is it used for creating tokens. You can find the entire explanation for ERC20 [here](hhttps://eips.ethereum.org/EIPS/eip-20). Make sure you read the provided link before you proceed to next steps.
 To build the smart contract we would be using [Hardhat](https://hardhat.org/).Hardhat is an Ethereum development environment and framework designed for full stack development in Solidity. In simple words you can write your smart contract, deploy them, run tests, and debug your code.
 
 - To setup a Hardhat project, Open up a terminal and execute these commands
@@ -174,7 +181,7 @@ To build the smart contract we would be using [Hardhat](https://hardhat.org/).Ha
 
 - Now create a `.env` file in the `hardhat-tutorial` folder and add the following lines, use the instructions in the comments to get your Alchemy API Key URL and RINKEBY Private Key. Make sure that the account from which you get your rinkeby private key is funded with Rinkeby Ether.
 
-  ```
+  ```bash
 
   // Go to https://www.alchemyapi.io, sign up, create
   // a new App in its dashboard and select the network as Rinkeby, and replace "add-the-alchemy-key-url-here" with its key url
@@ -234,12 +241,12 @@ To build the smart contract we would be using [Hardhat](https://hardhat.org/).Ha
 
   - Replace "address-of-the-nft-contract" with the address of the `CryptoDevs.sol` that you deployed in the previous module(`NFT-Collection`)
 
-  ```js
-  // Address of the NFT Contract that you deployed
-  const CRYPTO_DEVS_NFT_CONTRACT_ADDRESS = "address-of-the-nft-contract";
+    ```js
+    // Address of the NFT Contract that you deployed
+    const CRYPTO_DEVS_NFT_CONTRACT_ADDRESS = "address-of-the-nft-contract";
 
-  module.exports = { CRYPTO_DEVS_NFT_CONTRACT_ADDRESS };
-  ```
+    module.exports = { CRYPTO_DEVS_NFT_CONTRACT_ADDRESS };
+    ```
 
 - Now open the `hardhat.config.js` file, we would add the `rinkeby` network here so that we can deploy our contract to rinkeby. Replace all the lines in the `hardhat.config.js` file with the given below lines
 
@@ -264,7 +271,7 @@ To build the smart contract we would be using [Hardhat](https://hardhat.org/).Ha
 
 - To deploy, open up a terminal pointing at`hardhat-tutorial` directory and execute this command
   ```bash
-      npx hardhat run scripts/deploy.js --network rinkeby
+    npx hardhat run scripts/deploy.js --network rinkeby
   ```
 - Save the CryptoDevToken Contract Address that was printed on your terminal in your notepad, you would need it futher down in the tutorial.
 
@@ -611,8 +618,8 @@ export default function Home() {
   };
 
   /*
-    connectWallet: Connects the MetaMask wallet
-  */
+        connectWallet: Connects the MetaMask wallet
+      */
   const connectWallet = async () => {
     try {
       // Get the provider from web3Modal, which in our case is MetaMask
@@ -645,8 +652,8 @@ export default function Home() {
   }, [walletConnected]);
 
   /*
-    renderButton: Returns a button based on the state of the dapp
-  */
+        renderButton: Returns a button based on the state of the dapp
+      */
   const renderButton = () => {
     // If we are currently waiting for something, return a loading button
     if (loading) {
@@ -676,6 +683,7 @@ export default function Home() {
           <input
             type="number"
             placeholder="Amount of Tokens"
+            // BigNumber.from converts the `e.target.value` to a BigNumber
             onChange={(e) => setTokenAmount(BigNumber.from(e.target.value))}
             className={styles.input}
           />
@@ -708,12 +716,13 @@ export default function Home() {
           {walletConnected ? (
             <div>
               <div className={styles.description}>
-                You have minted {utils.formatEther(balanceOfCryptoDevTokens)}{" "}
-                Crypto Dev Tokens
+                {/* Format Ether helps us in converting a BigNumber to string */}
+                You have minted {utils.formatEther(balanceOfCryptoDevTokens)} Crypto
+                Dev Tokens
               </div>
               <div className={styles.description}>
-                Overall {utils.formatEther(tokensMinted)}/10000 have been
-                minted!!!
+                {/* Format Ether helps us in converting a BigNumber to string */}
+                Overall {utils.formatEther(tokensMinted)}/10000 have been minted!!!
               </div>
               {renderButton()}
             </div>
@@ -734,7 +743,6 @@ export default function Home() {
     </div>
   );
 }
-
 ```
 
 - Now create a new folder under the my-app folder and name it `constants`.
@@ -763,7 +771,8 @@ Your ICO dapp should now work without errors 🚀
 ---
 
 ## Push to Github
-Make sure to push all this code to Github before proceeding to the next step.
+
+Make sure to push all this [code to Github before proceeding to the next step](https://medium.com/hackernoon/a-gentle-introduction-to-git-and-github-the-eli5-way-43f0aa64f2e4).
 
 ---
 
@@ -781,6 +790,6 @@ We will now deploy your dApp, so that everyone can see your website and you can 
 - Click `Deploy`
 - Now you can see your deployed website by going to your dashboard, selecting your project, and copying the URL from there!
 
-## CONGRATULATIONS! You're all done! 
+## CONGRATULATIONS! You're all done!
 
 Hopefully you enjoyed this tutorial. Don't forget to share your ICO website in the `#showcase` channel on Discord :D

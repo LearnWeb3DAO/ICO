@@ -293,6 +293,7 @@ export default function Home() {
           <input
             type="number"
             placeholder="Amount of Tokens"
+            // BigNumber.from converts the `e.target.value` to a BigNumber
             onChange={(e) => setTokenAmount(BigNumber.from(e.target.value))}
             className={styles.input}
           />
@@ -325,10 +326,12 @@ export default function Home() {
           {walletConnected ? (
             <div>
               <div className={styles.description}>
+                {/* Format Ether helps us in converting a BigNumber to string */}
                 You have minted {utils.formatEther(balanceOfCryptoDevTokens)}{" "}
                 Crypto Dev Tokens
               </div>
               <div className={styles.description}>
+                {/* Format Ether helps us in converting a BigNumber to string */}
                 Overall {utils.formatEther(tokensMinted)}/10000 have been
                 minted!!!
               </div>

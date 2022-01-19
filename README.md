@@ -296,7 +296,7 @@ npm install --save-dev @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs
          - my-app
   ```
 
-- To create this `my-app`, in the terminal point to Whitelist-Dapp folder and type
+- To create this `my-app`, in the terminal point to ICO folder and type
 
   ```bash
       npx create-next-app@latest

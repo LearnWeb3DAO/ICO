@@ -1,6 +1,6 @@
 # ICO (Initial Coin Offering)
 
-Now its time for you to launch a token for `Crypto Devs`. Lets call the token Crypto Dev Token.
+Now its time for you to launch a token for `Crypto Devs`. Let's call the token Crypto Dev Token.
 
 ![](https://i.imgur.com/78uY3Mm.png)
 
@@ -8,10 +8,10 @@ Now its time for you to launch a token for `Crypto Devs`. Lets call the token Cr
 
 - There should be a max of `10,000 CD` tokens.
 - Every `Crypto Dev` NFT holder should get 10 tokens for free but they would have to pay the gas fees.
-- The price of one CD at the time of ICO shoyld be `0.001 ether`
+- The price of one CD at the time of ICO should be `0.001 ether`
 - There should be a website which users can visit for the ICO.
 
-Lets start building 🚀
+Let's start building 🚀
 
 ## Prerequisites
 
@@ -198,7 +198,7 @@ npm install --save-dev @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs
   RINKEBY_PRIVATE_KEY="add-the-rinkeby-private-key-here"
   ```
 
-- Lets deploy the contract to `rinkeby` network.Create a new file named `deploy.js` under the `scripts` folder
+- Lets deploy the contract to `rinkeby` network. Create a new file named `deploy.js` under the `scripts` folder
 
 - Now we would write some code to deploy the contract in `deploy.js` file.
 
@@ -240,7 +240,7 @@ npm install --save-dev @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs
     });
   ```
 
-- You would see that the `deploy.js` file requires a constant. Lets create a `constants` folder under `hardhat-tutorial` folder.
+- You would see that the `deploy.js` file requires a constant. Let's create a `constants` folder under `hardhat-tutorial` folder.
 - Inside the `constants` folder create a new file named `index.js` and add the following lines to it.
 
   - Replace "address-of-the-nft-contract" with the address of the `CryptoDevs.sol` that you deployed in the previous module(`NFT-Collection`)
@@ -686,7 +686,7 @@ export default function Home() {
         </div>
       );
     }
-    // If user doesnt have any tokens to claim, show the mint button
+    // If user doesn't have any tokens to claim, show the mint button
     return (
       <div style={{ display: "flex-col" }}>
         <div>

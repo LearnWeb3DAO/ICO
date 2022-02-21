@@ -15,7 +15,7 @@ Let's start building 🚀
 
 ## Prerequisites
 
-- You can have completed the [NFT-Collection tutorial](https://github.com/LearnWeb3DAO/NFT-Collection)
+- You must have completed the [NFT-Collection tutorial](https://github.com/LearnWeb3DAO/NFT-Collection)
 
 ## Theory
 
@@ -64,7 +64,7 @@ npm install --save-dev @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs
 
 - We will need to call the `CryptoDevs Contract` that you deployed for your previous level to check for owners of CryptoDev NFT's. As we only need to call `tokenOfOwnerByIndex` and `balanceOf` methods, we can create an interface for `CryptoDevs contract` with only these two functions.This way we would save `gas` as we would not need to inherit and deploy the entire `CryptoDevs Contract` but only a part of it.
 
-- Create a new file inside the `contracts` direactory and call it `ICryptoDevs.sol` and add the following lines
+- Create a new file inside the `contracts` directory and call it `ICryptoDevs.sol` and add the following lines
 
   ```go
   // SPDX-License-Identifier: MIT

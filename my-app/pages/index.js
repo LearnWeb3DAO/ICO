@@ -21,9 +21,8 @@ export default function Home() {
   // based on the Crypto Dev NFT's held by the user for which they havent claimed the tokens
   const [tokensToBeClaimed, setTokensToBeClaimed] = useState(zero);
   // balanceOfCryptoDevTokens keeps track of number of Crypto Dev tokens owned by an address
-  const [balanceOfCryptoDevTokens, setBalanceOfCryptoDevTokens] = useState(
-    zero
-  );
+  const [balanceOfCryptoDevTokens, setBalanceOfCryptoDevTokens] =
+    useState(zero);
   // amount of the tokens that the user wants to mint
   const [tokenAmount, setTokenAmount] = useState(zero);
   // tokensMinted is the total number of tokens that have been minted till now out of 10000(max total supply)
@@ -261,6 +260,12 @@ export default function Home() {
     }
   }, [walletConnected]);
 
+  const handelInputChange = (e) => {
+    if (e.target.value !== "") {
+      BigNumber.from(e.target.value);
+    }
+  };
+
   /*
     renderButton: Returns a button based on the state of the dapp
   */
@@ -294,7 +299,10 @@ export default function Home() {
             type="number"
             placeholder="Amount of Tokens"
             // BigNumber.from converts the `e.target.value` to a BigNumber
-            onChange={(e) => setTokenAmount(BigNumber.from(e.target.value))}
+
+            // add handel Change function
+
+            onChange={handelInputChange}
             className={styles.input}
           />
         </div>

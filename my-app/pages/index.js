@@ -260,7 +260,7 @@ export default function Home() {
     }
   }, [walletConnected]);
 
-  const handelInputChange = (e) => {
+  const handleChange = (e) => {
     if (e.target.value !== "") {
       BigNumber.from(e.target.value);
     }
@@ -302,7 +302,7 @@ export default function Home() {
 
             // add handel Change function
 
-            onChange={handelInputChange}
+            onChange={handleChange}
             className={styles.input}
           />
         </div>

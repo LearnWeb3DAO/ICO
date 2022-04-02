@@ -4,6 +4,13 @@ Now its time for you to launch a token for `Crypto Devs`. Let's call the token C
 
 ![](https://i.imgur.com/78uY3Mm.png)
 
+---
+## Prefer a Video?
+If you would rather learn from a video, we have a recording available of this tutorial on our YouTube. Watch the video by clicking on the screenshot below, or go ahead and read the tutorial!
+[![ICO dApp Part-1](https://i.imgur.com/RbQWNQ1.png)](https://www.youtube.com/watch?v=qywahxzavkw "ICO dApp Tutorial")
+[![ICO dApp Part-2](https://i.imgur.com/frmWOa2.png)](https://www.youtube.com/watch?v=faIuZW5zCi8 "ICO dApp Tutorial")
+## Build
+
 ## Requirements
 
 - There should be a max of `10,000 CD` tokens.
@@ -12,6 +19,7 @@ Now its time for you to launch a token for `Crypto Devs`. Let's call the token C
 - There should be a website which users can visit for the ICO.
 
 Let's start building 🚀
+
 
 ## Prerequisites
 

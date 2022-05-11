@@ -403,7 +403,7 @@ npm install --save-dev @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs
   }
   ```
 
-- Open you index.js file under the pages folder and paste the following code, explanation of the code can be found in the comments.
+- Open your index.js file under the pages folder and paste the following code, explanation of the code can be found in the comments.
 
 ```javascript
 import { BigNumber, Contract, providers, utils } from "ethers";

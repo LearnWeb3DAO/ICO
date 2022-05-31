@@ -176,6 +176,18 @@ npm install --save-dev @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs
             _mint(msg.sender, amount * tokensPerNFT);
         }
 
+        /**
+          * @dev withdraws all ETH and tokens sent to the contract
+          * Requirements: 
+          * wallet connected must be owner's address
+          */
+        function withdraw() public onlyOwner {
+          address _owner = owner();
+          uint256 amount = address(this).balance;
+          (bool sent, ) = _owner.call{value: amount}("");
+          require(sent, "Failed to send Ether");
+        }
+
         // Function to receive Ether. msg.data must be empty
         receive() external payable {}
 
@@ -436,6 +448,8 @@ export default function Home() {
   const [tokenAmount, setTokenAmount] = useState(zero);
   // tokensMinted is the total number of tokens that have been minted till now out of 10000(max total supply)
   const [tokensMinted, setTokensMinted] = useState(zero);
+  // isOwner gets the owner of the contract through the signed address
+  const [isOwner, setIsOwner] = useState(false);
   // Create a reference to the Web3 Modal (used for connecting to Metamask) which persists as long as the page is open
   const web3ModalRef = useRef();
 
@@ -603,6 +617,51 @@ export default function Home() {
       console.error(err);
     }
   };
+
+  /**
+   * getOwner: gets the contract owner by connected address
+   */
+  const getOwner = async () => {
+    try {
+      const provider = await getProviderOrSigner();
+      const nftContract = new Contract(TOKEN_CONTRACT_ADDRESS, TOKEN_CONTRACT_ABI, provider);
+      // call the owner function from the contract
+      const _owner = await tokenContract.owner();
+      // we get signer to extract address of currently connected Metamask account
+      const signer = await getProviderOrSigner(true);
+      // Get the address associated to signer which is connected to Metamask
+      const address = await signer.getAddress();
+      if (address.toLowerCase() === _owner.toLowerCase()) {
+        setIsOwner(true);
+      }
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  /**
+   * withdrawCoins: withdraws ether and tokens by calling 
+   * the withdraw function in the contract
+   */
+  const withdrawCoins = async () => {
+    try {
+      const signer = await getProviderOrSigner(true);
+      const tokenContract = new Contract(
+        TOKEN_CONTRACT_ADDRESS,
+        TOKEN_CONTRACT_ABI,
+        signer
+      );
+
+      const tx = await tokenContract.withdraw();
+      setLoading(true);
+      await tx.wait();
+      setLoading(false);
+      await getOwner();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   /**
    * Returns a Provider or Signer object representing the Ethereum RPC with or without the
    * signing capabilities of metamask attached
@@ -666,6 +725,7 @@ export default function Home() {
       getTotalTokensMinted();
       getBalanceOfCryptoDevTokens();
       getTokensToBeClaimed();
+      withdrawCoins();
     }
   }, [walletConnected]);
 
@@ -678,6 +738,16 @@ export default function Home() {
       return (
         <div>
           <button className={styles.button}>Loading...</button>
+        </div>
+      );
+    }
+    // if owner is connected, withdrawCoins() is called
+    if (walletConnected && isOwner) {
+      return (
+        <div>
+          <button className={styles.button1} onClick={withdrawCoins}>
+            Withdraw Coins
+          </button>
         </div>
       );
     }

@@ -40,6 +40,8 @@ To build the smart contract we would be using [Hardhat](https://hardhat.org/).Ha
 - To setup a Hardhat project, Open up a terminal and execute these commands
 
   ```bash
+  mkdir ICO
+  cd ICO
   mkdir hardhat-tutorial
   cd hardhat-tutorial
   npm init --yes

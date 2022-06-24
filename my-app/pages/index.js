@@ -228,7 +228,7 @@ export default function Home() {
   const getOwner = async () => {
     try {
       const provider = await getProviderOrSigner();
-      const nftContract = new Contract(TOKEN_CONTRACT_ADDRESS, TOKEN_CONTRACT_ABI, provider);
+      const tokenContract = new Contract(TOKEN_CONTRACT_ADDRESS, TOKEN_CONTRACT_ABI, provider);
       // call the owner function from the contract
       const _owner = await tokenContract.owner();
       // we get signer to extract address of currently connected Metamask account

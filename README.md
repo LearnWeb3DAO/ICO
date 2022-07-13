@@ -1,4 +1,4 @@
-# ICO (Initial Coin Offering)
+# Launch your own Initial Coin Offering
 
 Now its time for you to launch a token for `Crypto Devs`. Let's call the token Crypto Dev Token.
 
@@ -78,7 +78,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
 
   ```go
   // SPDX-License-Identifier: MIT
-  pragma solidity ^0.8.10;
+  pragma solidity ^0.8.0;
 
   interface ICryptoDevs {
       /**
@@ -102,7 +102,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
 
   ```go
     // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.10;
+    pragma solidity ^0.8.0;
 
     import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
     import "@openzeppelin/contracts/access/Ownable.sol";
@@ -277,7 +277,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
 - Now open the `hardhat.config.js` file, we would add the `rinkeby` network here so that we can deploy our contract to rinkeby. Replace all the lines in the `hardhat.config.js` file with the given below lines
 
   ```js
-  require("@nomiclabs/hardhat-waffle");
+  require("@nomicfoundation/hardhat-toolbox");
   require("dotenv").config({ path: ".env" });
 
   const ALCHEMY_API_KEY_URL = process.env.ALCHEMY_API_KEY_URL;
@@ -285,7 +285,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
   const RINKEBY_PRIVATE_KEY = process.env.RINKEBY_PRIVATE_KEY;
 
   module.exports = {
-    solidity: "0.8.10",
+    solidity: "0.8.9",
     networks: {
       rinkeby: {
         url: ALCHEMY_API_KEY_URL,

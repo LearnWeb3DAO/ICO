@@ -53,17 +53,17 @@ To build the smart contract we would be using [Hardhat](https://hardhat.org/).Ha
   npx hardhat
   ```
 
-  - Select `Create a basic sample project`
+  - Select `Create a Javascript project`
   - Press enter for the already specified `Hardhat Project root`
   - Press enter for the question on if you want to add a `.gitignore`
-  - Press enter for `Do you want to install this sample project's dependencies with npm (@nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs/hardhat-ethers ethers)?`
+  - Press enter for `Do you want to install this sample project's dependencies with npm (@nomicfoundation/hardhat-toolbox)?`
 
 Now you have a hardhat project ready to go!
 
-If you are not on mac, please do this extra step and install these libraries as well :)
+If you are on Windows, please do this extra step and install these libraries as well :)
 
 ```bash
-npm install --save-dev @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs/hardhat-ethers ethers
+npm install --save-dev @nomicfoundation/hardhat-toolbox
 ```
 
 - In the same terminal now install `@openzeppelin/contracts` as we would be importing [Openzeppelin's ERC20 Contract](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol) and [Openzeppelin's Ownable Contract](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol) in our `CryptoDevToken` contract
@@ -220,7 +220,7 @@ npm install --save-dev @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs
   RINKEBY_PRIVATE_KEY="add-the-rinkeby-private-key-here"
   ```
 
-- Lets deploy the contract to `rinkeby` network. Create a new file named `deploy.js` under the `scripts` folder
+- Lets deploy the contract to `rinkeby` network. Create a new file, or replace the existing default file, named `deploy.js` under the `scripts` folder
 
 - Now we would write some code to deploy the contract in `deploy.js` file.
 

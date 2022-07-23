@@ -47,11 +47,12 @@
   border: none;
   color: #ffffff;
   font-size: 15px;
-  padding: 5px;
-  width: 100px;
+  padding: 20px;
+  width: 200px;
   cursor: pointer;
   margin-bottom: 2%;
 }
+
 @media (max-width: 1000px) {
   .main {
     width: 100%;

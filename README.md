@@ -220,7 +220,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
   RINKEBY_PRIVATE_KEY="add-the-rinkeby-private-key-here"
   ```
 
-- Let's deploy the contract to `rinkeby` network. Create a new file (or replace the existing default file) named `deploy.js` under the `scripts` folder.
+- Let's deploy the contract to the `rinkeby` network. Create a new file (or replace the existing default file) named `deploy.js` under the `scripts` folder.
 
 - Now we will write some code to deploy the contract in `deploy.js` file.
 
@@ -295,7 +295,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
   };
   ```
   
-- Compile the contract, open up a terminal pointing to `hardhat-tutorial` directory and execute this command:
+- Compile the contract, open up a terminal pointing to the `hardhat-tutorial` directory and execute this command:
 
   ```bash
      npx hardhat compile
@@ -318,7 +318,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
          - my-app
   ```
 
-- To create this `my-app`, in the terminal point to the ICO folder and type:
+- To create this `my-app`, in the terminal point to the `ICO` folder and type:
 
   ```bash
       npx create-next-app@latest
@@ -335,7 +335,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
 
 - Now go to `http://localhost:3000`, your app should be running 🤘
 
-- Now let's install the Web3Modal library(https://github.com/Web3Modal/web3modal). Web3Modal is an easy-to-use library to help developers add support for multiple providers in their apps with a simple customizable configuration. By default Web3Modal Library supports injected providers like (Metamask, Dapper, Gnosis Safe, Frame, Web3 Browsers, etc). You can also easily configure the library to support Portis, Fortmatic, Squarelink, Torus, Authereum, D'CENT Wallet and Arkane.
+- Now let's install the Web3Modal library(https://github.com/Web3Modal/web3modal). Web3Modal is an easy-to-use library to help developers add support for multiple providers in their apps with a simple customizable configuration. By default Web3Modal Library supports injected providers like (Metamask, Dapper, Gnosis Safe, Frame, Web3 Browsers, etc). You can also easily configure the library to support Portis, Fortmatic, Squarelink, Torus, Authereum, D'CENT Wallet, and Arkane.
   Open up a terminal pointing to `my-app` directory and execute this command:
 
   ```bash
@@ -836,12 +836,7 @@ export default function Home() {
 ```
 
 - Now create a new folder under the `my-app` folder and name it `constants`.
-- In the `constants` folder create a file, `index.js` and paste the following code.
-
-  - Replace `"abi-of-your-nft-contract"` with the abi of the NFT contract that you deployed in the last tutorial.
-  - Replace `"address-of-your-nft-contract"` with the address of the NFT contract that you deployed in your previous tutorial.
-  - Replace `"abi-of-your-token-contract"` by the abi of the token contract. To get the abi of the Token contract, go to `hardhat-tutorial/artifacts/contracts/CryptoDevToken.sol` and then from`CryptoDevToken.json` file get the array marked under the `"abi"` key.
-  - Replace `"address-of-your-token-contract"` with the address of the token contract that you saved to your notepad earlier in the tutorial.
+- In the `constants` folder create a file called `index.js` and paste the following code:
 
   ```js
   export const NFT_CONTRACT_ABI = "abi-of-your-nft-contract";
@@ -849,6 +844,11 @@ export default function Home() {
   export const TOKEN_CONTRACT_ABI = "abi-of-your-token-contract";
   export const TOKEN_CONTRACT_ADDRESS = "address-of-your-token-contract";
   ```
+
+  - Replace `"abi-of-your-nft-contract"` with the abi of the NFT contract that you deployed in the last tutorial.
+  - Replace `"address-of-your-nft-contract"` with the address of the NFT contract that you deployed in your previous tutorial.
+  - Replace `"abi-of-your-token-contract"` by the abi of the token contract. To get the abi of the Token contract, go to `hardhat-tutorial/artifacts/contracts/CryptoDevToken.sol` and then from`CryptoDevToken.json` file get the array marked under the `"abi"` key.
+  - Replace `"address-of-your-token-contract"` with the address of the token contract that you saved to your notepad earlier in the tutorial.
 
 - Now in your terminal which is pointing to `my-app` folder, execute the following:
 

@@ -309,8 +309,8 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
 
 ### Website
 
-- To develop the website we would be using [React](https://reactjs.org/) and [Next Js](https://nextjs.org/). React is a javascript framework which is used to make websites and Next Js is built on top of React.
-- First, You would need to create a new `next` app. Your folder structure should look something like
+- To develop the website we will be using [React](https://reactjs.org/) and [Next Js](https://nextjs.org/). React is a javascript framework which is used to make websites and Next Js is built on top of React.
+- You first need to create a new `next` app. Your folder structure should look something like this:
 
   ```
      - ICO
@@ -318,15 +318,15 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
          - my-app
   ```
 
-- To create this `my-app`, in the terminal point to ICO folder and type
+- To create this `my-app`, in the terminal point to the ICO folder and type:
 
   ```bash
       npx create-next-app@latest
   ```
 
-  and press `enter` for all the questions
+  and press `enter` for all the questions.
 
-- Now to run the app, execute these commands in the terminal
+- Now to run the app, execute these commands in the terminal:
 
   ```
   cd my-app
@@ -335,22 +335,22 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
 
 - Now go to `http://localhost:3000`, your app should be running 🤘
 
-- Now lets install Web3Modal library(https://github.com/Web3Modal/web3modal). Web3Modal is an easy-to-use library to help developers add support for multiple providers in their apps with a simple customizable configuration. By default Web3Modal Library supports injected providers like (Metamask, Dapper, Gnosis Safe, Frame, Web3 Browsers, etc), You can also easily configure the library to support Portis, Fortmatic, Squarelink, Torus, Authereum, D'CENT Wallet and Arkane.
-  Open up a terminal pointing at`my-app` directory and execute this command
+- Now let's install the Web3Modal library(https://github.com/Web3Modal/web3modal). Web3Modal is an easy-to-use library to help developers add support for multiple providers in their apps with a simple customizable configuration. By default Web3Modal Library supports injected providers like (Metamask, Dapper, Gnosis Safe, Frame, Web3 Browsers, etc). You can also easily configure the library to support Portis, Fortmatic, Squarelink, Torus, Authereum, D'CENT Wallet and Arkane.
+  Open up a terminal pointing to `my-app` directory and execute this command:
 
   ```bash
     npm install web3modal
   ```
 
-- In the same terminal also install `ethers.js`
+- In the same terminal also install `ethers.js`:
 
   ```bash
-  npm i ethers
+  npm install ethers
   ```
 
-- In your public folder, download the following image (https://github.com/LearnWeb3DAO/NFT-Collection/tree/main/my-app/public/cryptodevs/0.svg). Make sure that the name of the downloaded image is `0.svg`
+- In the `public` folder, download the following image (https://github.com/LearnWeb3DAO/NFT-Collection/tree/main/my-app/public/cryptodevs/0.svg). Make sure that the name of the downloaded image is `0.svg`.
 
-- Now go to styles folder and replace all the contents of `Home.modules.css` file with the following code, this would add some styling to your dapp:
+- Now go to styles folder and replace all the contents of `Home.modules.css` file with the following code. This will add some styling to your dapp:
 
   ```css
   .main {
@@ -417,7 +417,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
   }
   ```
 
-- Open your index.js file under the pages folder and paste the following code, explanation of the code can be found in the comments.
+- Open the `index.js` file under the `pages` folder and paste the following code. An explanation of the code can be found in the comments.
 
 ```javascript
 import { BigNumber, Contract, providers, utils } from "ethers";
@@ -835,13 +835,13 @@ export default function Home() {
 }
 ```
 
-- Now create a new folder under the my-app folder and name it `constants`.
-- In the constants folder create a file, `index.js` and paste the following code.
+- Now create a new folder under the `my-app` folder and name it `constants`.
+- In the `constants` folder create a file, `index.js` and paste the following code.
 
   - Replace `"abi-of-your-nft-contract"` with the abi of the NFT contract that you deployed in the last tutorial.
   - Replace `"address-of-your-nft-contract"` with the address of the NFT contract that you deployed in your previous tutorial.
   - Replace `"abi-of-your-token-contract"` by the abi of the token contract. To get the abi of the Token contract, go to `hardhat-tutorial/artifacts/contracts/CryptoDevToken.sol` and then from`CryptoDevToken.json` file get the array marked under the `"abi"` key.
-  - Replace `"address-of-your-token-contract"` with the address of the token contract that you saved to your notepad, early on in the tutorial
+  - Replace `"address-of-your-token-contract"` with the address of the token contract that you saved to your notepad earlier in the tutorial.
 
   ```js
   export const NFT_CONTRACT_ABI = "abi-of-your-nft-contract";
@@ -850,7 +850,7 @@ export default function Home() {
   export const TOKEN_CONTRACT_ADDRESS = "address-of-your-token-contract";
   ```
 
-- Now in your terminal which is pointing to `my-app` folder, execute
+- Now in your terminal which is pointing to `my-app` folder, execute the following:
 
   ```bash
   npm run dev
@@ -862,7 +862,7 @@ Your ICO dapp should now work without errors 🚀
 
 ## Push to Github
 
-Make sure to push all this [code to Github before proceeding to the next step](https://medium.com/hackernoon/a-gentle-introduction-to-git-and-github-the-eli5-way-43f0aa64f2e4).
+Make sure to push all your [code to Github before proceeding to the next step](https://medium.com/hackernoon/a-gentle-introduction-to-git-and-github-the-eli5-way-43f0aa64f2e4).
 
 ---
 
@@ -870,11 +870,11 @@ Make sure to push all this [code to Github before proceeding to the next step](h
 
 We will now deploy your dApp, so that everyone can see your website and you can share it with all of your LearnWeb3 DAO friends.
 
-- Go to https://vercel.com/ and sign in with your GitHub
-- Then click on `New Project` button and then select your ICO dApp repo
-- When configuring your new project, Vercel will allow you to customize your `Root Directory`
-- Click `Edit` next to `Root Directory` and set it to `my-app`
-- Select the `Framework Preset` as `Next.js`
+- Go to https://vercel.com/ and sign in with your GitHub.
+- Then click on `New Project` button and then select your ICO dApp repo.
+- When configuring your new project, Vercel will allow you to customize your `Root Directory`.
+- Click `Edit` next to `Root Directory` and set it to `my-app`.
+- Select the `Framework Preset` as `Next.js`.
   ![](https://i.imgur.com/2oJRKgO.png)
 
 - Click `Deploy`

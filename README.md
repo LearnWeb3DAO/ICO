@@ -66,15 +66,15 @@ If you are on Windows, please do this extra step and install these libraries as 
 npm install --save-dev @nomicfoundation/hardhat-toolbox
 ```
 
-- In the same terminal now install `@openzeppelin/contracts` as we will be importing [Openzeppelin's ERC20 Contract](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol) and [Openzeppelin's Ownable Contract](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol) in our `CryptoDevToken` contract.
+- In the same terminal, install `@openzeppelin/contracts` as we will be importing [Openzeppelin's ERC20 Contract](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol) and [Openzeppelin's Ownable Contract](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol) in our `CryptoDevToken` contract.
 
   ```bash
   npm install @openzeppelin/contracts
   ```
 
-- We need to call the `CryptoDevs Contract` that you deployed for your previous level to check for owners of CryptoDev NFT's. As we only need to call `tokenOfOwnerByIndex` and `balanceOf` methods, we can create an interface for `CryptoDevs contract` with only these two functions. This way we would save `gas` as we would not need to inherit and deploy the entire `CryptoDevs Contract` but only a part of it.
+- We need to call the `CryptoDevs Contract` that you deployed for the previous level to check for owners of CryptoDev NFT's. As we only need to call `tokenOfOwnerByIndex` and `balanceOf` methods, we can create an interface for `CryptoDevs contract` with only these two functions. This way we save `gas` as we do not need to inherit and deploy the entire `CryptoDevs Contract`, but only a part of it.
 
-- Create a new file inside the `contracts` directory and call it `ICryptoDevs.sol` and add the following lines:
+- Create a new file inside the `contracts` directory and call it `ICryptoDevs.sol`. Add the following lines:
 
   ```go
   // SPDX-License-Identifier: MIT
@@ -98,7 +98,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
 
   ```
 
-- Create a new file inside the `contracts` directory and call it `CryptoDevToken.sol` and add the following lines:
+- Create another file inside the `contracts` directory and call it `CryptoDevToken.sol`. Add the following lines:
 
   ```go
     // SPDX-License-Identifier: MIT
@@ -199,7 +199,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
 
   ```
 
-- Now we will install the `dotenv` package to be able to import the env file and use it in our config. Open up a terminal pointing at the `hardhat-tutorial` directory and execute this command:
+- Now we will install the `dotenv` package to be able to import the env file and use it in our config. Open up a terminal pointing to the `hardhat-tutorial` directory and execute this command:
 
   ```bash
   npm install dotenv
@@ -220,7 +220,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
   RINKEBY_PRIVATE_KEY="add-the-rinkeby-private-key-here"
   ```
 
-- Lets deploy the contract to `rinkeby` network. Create a new file, or replace the existing default file, named `deploy.js` under the `scripts` folder.
+- Let's deploy the contract to `rinkeby` network. Create a new file (or replace the existing default file) named `deploy.js` under the `scripts` folder.
 
 - Now we will write some code to deploy the contract in `deploy.js` file.
 
@@ -295,7 +295,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
   };
   ```
   
-- Compile the contract, open up a terminal pointing at `hardhat-tutorial` directory and execute this command:
+- Compile the contract, open up a terminal pointing to `hardhat-tutorial` directory and execute this command:
 
   ```bash
      npx hardhat compile
@@ -305,7 +305,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
   ```bash
     npx hardhat run scripts/deploy.js --network rinkeby
   ```
-- Save the CryptoDevToken Contract Address that was printed on your terminal in your notepad. You will need it futher down in the tutorial.
+- Save the CryptoDevToken Contract Address that was printed to your terminal in your notepad. You will need it later in the tutorial.
 
 ### Website
 

@@ -1,6 +1,6 @@
 # Launch your own Initial Coin Offering
 
-Now its time for you to launch a token for `Crypto Devs`. Let's call the token Crypto Dev Token.
+Now it's time for you to launch a token for `Crypto Devs`. Let's call the token Crypto Dev Token.
 
 ![](https://i.imgur.com/78uY3Mm.png)
 
@@ -15,29 +15,29 @@ If you would rather learn from a video, we have a recording available of this tu
 
 - There should be a max of `10,000 CD` tokens.
 - Every `Crypto Dev` NFT holder should get 10 tokens for free but they would have to pay the gas fees.
-- The price of one CD at the time of ICO should be `0.001 ether`
-- There should be a website which users can visit for the ICO.
+- The price of one CD at the time of ICO should be `0.001 ether`.
+- There should be a website that users can visit for the ICO.
 
 Let's start building 🚀
 
 
 ## Prerequisites
 
-- You must have completed the [NFT-Collection tutorial](https://github.com/LearnWeb3DAO/NFT-Collection)
+- You must have completed the [NFT-Collection tutorial](https://github.com/LearnWeb3DAO/NFT-Collection).
 
 ## Theory
 
 - What is an ERC20?
   - ERC-20 is a technical standard; it is used for all smart contracts on the Ethereum blockchain for token implementation and provides a list of rules that all Ethereum-based tokens must follow.
-  - Please look at all the ERC20 [functions](https://docs.openzeppelin.com/contracts/2.x/api/token/erc20) before moving ahead
+  - Please look at all the ERC20 [functions](https://docs.openzeppelin.com/contracts/2.x/api/token/erc20) before moving ahead.
 
 ## Build
 
 ### Smart Contract
 
-To build the smart contract we would be using [Hardhat](https://hardhat.org/).Hardhat is an Ethereum development environment and framework designed for full stack development in Solidity. In simple words you can write your smart contract, deploy them, run tests, and debug your code.
+To build the smart contract we will be using [Hardhat](https://hardhat.org/). Hardhat is an Ethereum development environment and framework designed for full stack development in Solidity. In simple words you can write your smart contracts, deploy them, run tests, and debug your code.
 
-- To setup a Hardhat project, Open up a terminal and execute these commands
+- To setup a Hardhat project, open up a terminal and execute these commands:
 
   ```bash
   mkdir ICO
@@ -66,15 +66,15 @@ If you are on Windows, please do this extra step and install these libraries as 
 npm install --save-dev @nomicfoundation/hardhat-toolbox
 ```
 
-- In the same terminal now install `@openzeppelin/contracts` as we would be importing [Openzeppelin's ERC20 Contract](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol) and [Openzeppelin's Ownable Contract](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol) in our `CryptoDevToken` contract
+- In the same terminal, install `@openzeppelin/contracts` as we will be importing [Openzeppelin's ERC20 Contract](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol) and [Openzeppelin's Ownable Contract](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol) in our `CryptoDevToken` contract.
 
   ```bash
   npm install @openzeppelin/contracts
   ```
 
-- We will need to call the `CryptoDevs Contract` that you deployed for your previous level to check for owners of CryptoDev NFT's. As we only need to call `tokenOfOwnerByIndex` and `balanceOf` methods, we can create an interface for `CryptoDevs contract` with only these two functions.This way we would save `gas` as we would not need to inherit and deploy the entire `CryptoDevs Contract` but only a part of it.
+- We need to call the `CryptoDevs Contract` that you deployed for the previous level to check for owners of CryptoDev NFT's. As we only need to call `tokenOfOwnerByIndex` and `balanceOf` methods, we can create an interface for `CryptoDevs contract` with only these two functions. This way we save `gas` as we do not need to inherit and deploy the entire `CryptoDevs Contract`, but only a part of it.
 
-- Create a new file inside the `contracts` directory and call it `ICryptoDevs.sol` and add the following lines
+- Create a new file inside the `contracts` directory and call it `ICryptoDevs.sol`. Add the following lines:
 
   ```go
   // SPDX-License-Identifier: MIT
@@ -98,7 +98,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
 
   ```
 
-- Create a new file inside the `contracts` directory and call it `CryptoDevToken.sol` and add the following lines
+- Create another file inside the `contracts` directory and call it `CryptoDevToken.sol`. Add the following lines:
 
   ```go
     // SPDX-License-Identifier: MIT
@@ -199,13 +199,13 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
 
   ```
 
-- Now we would install `dotenv` package to be able to import the env file and use it in our config. Open up a terminal pointing at`hardhat-tutorial` directory and execute this command
+- Now we will install the `dotenv` package to be able to import the env file and use it in our config. Open up a terminal pointing to the `hardhat-tutorial` directory and execute this command:
 
   ```bash
   npm install dotenv
   ```
 
-- Now create a `.env` file in the `hardhat-tutorial` folder and add the following lines, use the instructions in the comments to get your Alchemy API Key URL and RINKEBY Private Key. Make sure that the account from which you get your rinkeby private key is funded with Rinkeby Ether.
+- Create a `.env` file in the `hardhat-tutorial` folder and add the following lines. Use the instructions in the comments to get your Alchemy API Key URL and RINKEBY Private Key. Make sure that the account from which you get your Rinkeby private key is funded with Rinkeby Ether.
 
   ```bash
 
@@ -220,9 +220,9 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
   RINKEBY_PRIVATE_KEY="add-the-rinkeby-private-key-here"
   ```
 
-- Lets deploy the contract to `rinkeby` network. Create a new file, or replace the existing default file, named `deploy.js` under the `scripts` folder
+- Let's deploy the contract to the `rinkeby` network. Create a new file (or replace the existing default file) named `deploy.js` under the `scripts` folder.
 
-- Now we would write some code to deploy the contract in `deploy.js` file.
+- Now we will write some code to deploy the contract in `deploy.js` file.
 
   ```js
   const { ethers } = require("hardhat");
@@ -262,10 +262,10 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
     });
   ```
 
-- You would see that the `deploy.js` file requires a constant. Let's create a `constants` folder under `hardhat-tutorial` folder.
+- You can see that the `deploy.js` file requires a constant. Let's create a `constants` folder under `hardhat-tutorial` folder.
 - Inside the `constants` folder create a new file named `index.js` and add the following lines to it.
 
-  - Replace "address-of-the-nft-contract" with the address of the `CryptoDevs.sol` that you deployed in the previous module(`NFT-Collection`)
+  - Replace "address-of-the-nft-contract" with the address of the `CryptoDevs.sol` that you deployed in the previous module(`NFT-Collection`):
 
     ```js
     // Address of the NFT Contract that you deployed
@@ -274,7 +274,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
     module.exports = { CRYPTO_DEVS_NFT_CONTRACT_ADDRESS };
     ```
 
-- Now open the `hardhat.config.js` file, we would add the `rinkeby` network here so that we can deploy our contract to rinkeby. Replace all the lines in the `hardhat.config.js` file with the given below lines
+- Now open the `hardhat.config.js` file, we will add the `rinkeby` network here so that we can deploy our contract to Rinkeby. Replace all the lines in the `hardhat.config.js` file with the given below lines:
 
   ```js
   require("@nomicfoundation/hardhat-toolbox");
@@ -295,22 +295,22 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
   };
   ```
   
-- Compile the contract, open up a terminal pointing at`hardhat-tutorial` directory and execute this command
+- Compile the contract, open up a terminal pointing to the `hardhat-tutorial` directory and execute this command:
 
   ```bash
      npx hardhat compile
   ```
   
-- To deploy, open up a terminal pointing at`hardhat-tutorial` directory and execute this command
+- Execute this command in the same directory to deploy the contract:
   ```bash
     npx hardhat run scripts/deploy.js --network rinkeby
   ```
-- Save the CryptoDevToken Contract Address that was printed on your terminal in your notepad, you would need it futher down in the tutorial.
+- Save the CryptoDevToken Contract Address that was printed to your terminal in your notepad. You will need it later in the tutorial.
 
 ### Website
 
-- To develop the website we would be using [React](https://reactjs.org/) and [Next Js](https://nextjs.org/). React is a javascript framework which is used to make websites and Next Js is built on top of React.
-- First, You would need to create a new `next` app. Your folder structure should look something like
+- To develop the website we will be using [React](https://reactjs.org/) and [Next Js](https://nextjs.org/). React is a javascript framework which is used to make websites and Next Js is built on top of React.
+- You first need to create a new `next` app. Your folder structure should look something like this:
 
   ```
      - ICO
@@ -318,15 +318,15 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
          - my-app
   ```
 
-- To create this `my-app`, in the terminal point to ICO folder and type
+- To create this `my-app`, in the terminal point to the `ICO` folder and type:
 
   ```bash
       npx create-next-app@latest
   ```
 
-  and press `enter` for all the questions
+  and press `enter` for all the questions.
 
-- Now to run the app, execute these commands in the terminal
+- Now to run the app, execute these commands in the terminal:
 
   ```
   cd my-app
@@ -335,22 +335,22 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
 
 - Now go to `http://localhost:3000`, your app should be running 🤘
 
-- Now lets install Web3Modal library(https://github.com/Web3Modal/web3modal). Web3Modal is an easy-to-use library to help developers add support for multiple providers in their apps with a simple customizable configuration. By default Web3Modal Library supports injected providers like (Metamask, Dapper, Gnosis Safe, Frame, Web3 Browsers, etc), You can also easily configure the library to support Portis, Fortmatic, Squarelink, Torus, Authereum, D'CENT Wallet and Arkane.
-  Open up a terminal pointing at`my-app` directory and execute this command
+- Now let's install the Web3Modal library(https://github.com/Web3Modal/web3modal). Web3Modal is an easy-to-use library to help developers add support for multiple providers in their apps with a simple customizable configuration. By default Web3Modal Library supports injected providers like (Metamask, Dapper, Gnosis Safe, Frame, Web3 Browsers, etc). You can also easily configure the library to support Portis, Fortmatic, Squarelink, Torus, Authereum, D'CENT Wallet, and Arkane.
+  Open up a terminal pointing to `my-app` directory and execute this command:
 
   ```bash
     npm install web3modal
   ```
 
-- In the same terminal also install `ethers.js`
+- In the same terminal also install `ethers.js`:
 
   ```bash
-  npm i ethers
+  npm install ethers
   ```
 
-- In your public folder, download the following image (https://github.com/LearnWeb3DAO/NFT-Collection/tree/main/my-app/public/cryptodevs/0.svg). Make sure that the name of the downloaded image is `0.svg`
+- In the `public` folder, download the following image (https://github.com/LearnWeb3DAO/NFT-Collection/tree/main/my-app/public/cryptodevs/0.svg). Make sure that the name of the downloaded image is `0.svg`.
 
-- Now go to styles folder and replace all the contents of `Home.modules.css` file with the following code, this would add some styling to your dapp:
+- Now go to styles folder and replace all the contents of `Home.modules.css` file with the following code. This will add some styling to your dapp:
 
   ```css
   .main {
@@ -417,7 +417,7 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
   }
   ```
 
-- Open your index.js file under the pages folder and paste the following code, explanation of the code can be found in the comments.
+- Open the `index.js` file under the `pages` folder and paste the following code. An explanation of the code can be found in the comments.
 
 ```javascript
 import { BigNumber, Contract, providers, utils } from "ethers";
@@ -835,13 +835,8 @@ export default function Home() {
 }
 ```
 
-- Now create a new folder under the my-app folder and name it `constants`.
-- In the constants folder create a file, `index.js` and paste the following code.
-
-  - Replace `"abi-of-your-nft-contract"` with the abi of the NFT contract that you deployed in the last tutorial.
-  - Replace `"address-of-your-nft-contract"` with the address of the NFT contract that you deployed in your previous tutorial.
-  - Replace `"abi-of-your-token-contract"` by the abi of the token contract. To get the abi of the Token contract, go to `hardhat-tutorial/artifacts/contracts/CryptoDevToken.sol` and then from`CryptoDevToken.json` file get the array marked under the `"abi"` key.
-  - Replace `"address-of-your-token-contract"` with the address of the token contract that you saved to your notepad, early on in the tutorial
+- Now create a new folder under the `my-app` folder and name it `constants`.
+- In the `constants` folder create a file called `index.js` and paste the following code:
 
   ```js
   export const NFT_CONTRACT_ABI = "abi-of-your-nft-contract";
@@ -850,7 +845,12 @@ export default function Home() {
   export const TOKEN_CONTRACT_ADDRESS = "address-of-your-token-contract";
   ```
 
-- Now in your terminal which is pointing to `my-app` folder, execute
+  - Replace `"abi-of-your-nft-contract"` with the abi of the NFT contract that you deployed in the last tutorial.
+  - Replace `"address-of-your-nft-contract"` with the address of the NFT contract that you deployed in your previous tutorial.
+  - Replace `"abi-of-your-token-contract"` by the abi of the token contract. To get the abi of the Token contract, go to `hardhat-tutorial/artifacts/contracts/CryptoDevToken.sol` and then from`CryptoDevToken.json` file get the array marked under the `"abi"` key.
+  - Replace `"address-of-your-token-contract"` with the address of the token contract that you saved to your notepad earlier in the tutorial.
+
+- Now in your terminal which is pointing to `my-app` folder, execute the following:
 
   ```bash
   npm run dev
@@ -862,7 +862,7 @@ Your ICO dapp should now work without errors 🚀
 
 ## Push to Github
 
-Make sure to push all this [code to Github before proceeding to the next step](https://medium.com/hackernoon/a-gentle-introduction-to-git-and-github-the-eli5-way-43f0aa64f2e4).
+Make sure to push all your [code to Github before proceeding to the next step](https://medium.com/hackernoon/a-gentle-introduction-to-git-and-github-the-eli5-way-43f0aa64f2e4).
 
 ---
 
@@ -870,11 +870,11 @@ Make sure to push all this [code to Github before proceeding to the next step](h
 
 We will now deploy your dApp, so that everyone can see your website and you can share it with all of your LearnWeb3 DAO friends.
 
-- Go to https://vercel.com/ and sign in with your GitHub
-- Then click on `New Project` button and then select your ICO dApp repo
-- When configuring your new project, Vercel will allow you to customize your `Root Directory`
-- Click `Edit` next to `Root Directory` and set it to `my-app`
-- Select the `Framework Preset` as `Next.js`
+- Go to https://vercel.com/ and sign in with your GitHub.
+- Then click on `New Project` button and then select your ICO dApp repo.
+- When configuring your new project, Vercel will allow you to customize your `Root Directory`.
+- Click `Edit` next to `Root Directory` and set it to `my-app`.
+- Select the `Framework Preset` as `Next.js`.
   ![](https://i.imgur.com/2oJRKgO.png)
 
 - Click `Deploy`

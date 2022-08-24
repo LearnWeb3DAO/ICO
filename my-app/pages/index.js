@@ -27,10 +27,8 @@ export default function Home() {
   const [tokenAmount, setTokenAmount] = useState(zero);
   // tokensMinted is the total number of tokens that have been minted till now out of 10000(max total supply)
   const [tokensMinted, setTokensMinted] = useState(zero);
-
   // isOwner gets the owner of the contract through the signed address
   const [isOwner, setIsOwner] = useState(false);
-
   // Create a reference to the Web3 Modal (used for connecting to Metamask) which persists as long as the page is open
   const web3ModalRef = useRef();
 
@@ -200,29 +198,7 @@ export default function Home() {
   };
 
   /**
-   * withdrawCoins: function to withdraw ether sent to contract through the front end
-   */
-  const withdrawCoins = async () => {
-    try {
-      const signer = await getProviderOrSigner(true);
-      const tokenContract = new Contract(
-        TOKEN_CONTRACT_ADDRESS,
-        TOKEN_CONTRACT_ABI,
-        signer
-      );
-
-      const tx = await tokenContract.withdraw();
-      setLoading(true);
-      await tx.wait();
-      setLoading(false);
-      await getOwner();
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  /**
-   * getOwner: get the contract owner
+   * getOwner: gets the contract owner by connected address
    */
   const getOwner = async () => {
     try {
@@ -243,6 +219,29 @@ export default function Home() {
       }
     } catch (err) {
       console.error(err.message);
+    }
+  };
+
+  /**
+   * withdrawCoins: withdraws ether and tokens by calling
+   * the withdraw function in the contract
+   */
+  const withdrawCoins = async () => {
+    try {
+      const signer = await getProviderOrSigner(true);
+      const tokenContract = new Contract(
+        TOKEN_CONTRACT_ADDRESS,
+        TOKEN_CONTRACT_ABI,
+        signer
+      );
+
+      const tx = await tokenContract.withdraw();
+      setLoading(true);
+      await tx.wait();
+      setLoading(false);
+      await getOwner();
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -279,8 +278,8 @@ export default function Home() {
   };
 
   /*
-    connectWallet: Connects the MetaMask wallet
-  */
+        connectWallet: Connects the MetaMask wallet
+      */
   const connectWallet = async () => {
     try {
       // Get the provider from web3Modal, which in our case is MetaMask
@@ -309,13 +308,13 @@ export default function Home() {
       getTotalTokensMinted();
       getBalanceOfCryptoDevTokens();
       getTokensToBeClaimed();
-      withdrawCoins(); // calls the withdraw function from the contract
+      getOwner();
     }
   }, [walletConnected]);
 
   /*
-    renderButton: Returns a button based on the state of the dapp
-  */
+        renderButton: Returns a button based on the state of the dapp
+      */
   const renderButton = () => {
     // If we are currently waiting for something, return a loading button
     if (loading) {
@@ -325,17 +324,7 @@ export default function Home() {
         </div>
       );
     }
-    // if owner is connected, withdrawCoins() is called
-    if (walletConnected && isOwner) {
-      return (
-        <div>
-          <button className={styles.button1} onClick={withdrawCoins}>
-            Withdraw Coins
-          </button>
-        </div>
-      );
-    }
-    // If tokens to be claimed are greater than 0, Return a claim button
+
     if (tokensToBeClaimed > 0) {
       return (
         <div>
@@ -348,7 +337,7 @@ export default function Home() {
         </div>
       );
     }
-    // If user doesnt have any tokens to claim, show the mint button
+    // If user doesn't have any tokens to claim, show the mint button
     return (
       <div style={{ display: "flex-col" }}>
         <div>
@@ -398,6 +387,14 @@ export default function Home() {
                 minted!!!
               </div>
               {renderButton()}
+
+              {isOwner && (
+                <div>
+                  <button className={styles.button} onClick={withdrawCoins}>
+                    Withdraw Coins
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <button onClick={connectWallet} className={styles.button}>

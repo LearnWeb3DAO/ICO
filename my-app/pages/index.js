@@ -313,6 +313,12 @@ export default function Home() {
     }
   }, [walletConnected]);
 
+  const handleChange = (e) => {
+    if (e.target.value !== "") {
+      BigNumber.from(e.target.value);
+    }
+  };
+
   /*
     renderButton: Returns a button based on the state of the dapp
   */
@@ -356,7 +362,10 @@ export default function Home() {
             type="number"
             placeholder="Amount of Tokens"
             // BigNumber.from converts the `e.target.value` to a BigNumber
-            onChange={(e) => setTokenAmount(BigNumber.from(e.target.value))}
+
+            // add handel Change function
+
+            onChange={handleChange}
             className={styles.input}
           />
         </div>

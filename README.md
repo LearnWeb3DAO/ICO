@@ -750,7 +750,7 @@ export default function Home() {
     if (walletConnected && isOwner) {
       return (
         <div>
-          <button className={styles.button1} onClick={withdrawCoins}>
+          <button className={styles.button} onClick={withdrawCoins}>
             Withdraw Coins
           </button>
         </div>

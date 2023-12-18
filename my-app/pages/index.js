@@ -129,7 +129,7 @@ export default function Home() {
         signer
       );
       // Each token is of `0.001 ether`. The value we need to send is `0.001 * amount`
-      const value = 0.001 * amount;
+      const value = amount.mul(0.001);
       const tx = await tokenContract.mint(amount, {
         // value signifies the cost of one crypto dev token which is "0.001" eth.
         // We are parsing `0.001` string to ether using the utils library from ethers.js
@@ -336,11 +336,11 @@ export default function Home() {
       );
     }
     // If tokens to be claimed are greater than 0, Return a claim button
-    if (tokensToBeClaimed > 0) {
+    if (tokensToBeClaimed.gt(0)) {
       return (
         <div>
           <div className={styles.description}>
-            {tokensToBeClaimed * 10} Tokens can be claimed!
+            {tokensToBeClaimed.mul(10)} Tokens can be claimed!
           </div>
           <button className={styles.button} onClick={claimCryptoDevTokens}>
             Claim Tokens
@@ -363,7 +363,7 @@ export default function Home() {
 
         <button
           className={styles.button}
-          disabled={!(tokenAmount > 0)}
+          disabled={tokenAmount.lte(0)}
           onClick={() => mintCryptoDevToken(tokenAmount)}
         >
           Mint Tokens
